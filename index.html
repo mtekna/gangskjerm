@@ -60,10 +60,19 @@
   .hour .i { width: 5.6vh; height: 5.6vh; margin: .4vh 0; }
   .hour .i svg { width: 100%; height: 100%; display: block; }
   .hour .t { font-size: 3.4vh; font-weight: 700; height: 4.2vh; }
-  .hour .bar { -webkit-box-flex: 1; flex: 1; width: 42%; min-height: 2vh; position: relative; margin: .6vh 0; background: rgba(120,150,180,.12); border-radius: .5vh; }
-  .hour .bar i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--rain); border-radius: .5vh; display: block; }
-  .hour .p { font-size: 2.3vh; color: var(--rain); height: 2.8vh; white-space: nowrap; }
-  .hour .p.zero { color: var(--faint); }
+  .hour .blk { -webkit-box-flex: 1; flex: 1; width: 88%; margin-top: .8vh; border-radius: .9vh; background: rgba(120,150,180,.10);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; overflow: hidden; }
+  .hour .blk .v { font-size: 3.3vh; font-weight: 700; line-height: 1.1; white-space: nowrap; }
+  .hour .blk .u { font-size: 2vh; color: var(--muted); line-height: 1.2; white-space: nowrap; }
+  .hour .blk svg { width: 3.6vh; height: 3.6vh; display: block; margin-bottom: .3vh; }
+  .hour .rain .v { color: var(--rain); }
+  .hour .rain.zero { background: transparent; }
+  .hour .rain.zero .v, .hour .rain.zero .u { color: var(--faint); font-weight: 500; }
+  .hour .rain.wetb { background: rgba(79,163,255,.18); }
+  .hour .wind .v { color: var(--text); }
+  .hour .wind.breezy .v, .hour .wind.breezy svg { color: var(--accent); }
+  .hour .wind.stormy .v, .hour .wind.stormy svg { color: var(--warn); }
+  .hour .wind svg { color: var(--muted); }
   .hours .none { grid-column: 1 / -1; color: var(--muted); font-size: 3vh; padding: 3vh 1vw; background: var(--card); border-radius: 1.2vh; }
 
   /* ---------- Avganger ---------- */
@@ -291,11 +300,14 @@ function renderWeather() {
   var html = '';
   until.forEach(function (x, idx) {
     var dt = new Date(x.time), n1 = x.data.next_1_hours, p = n1.details.precipitation_amount || 0;
-    var pct = p < 0.1 ? 0 : Math.max(14, Math.min(100, Math.round(p / 3 * 100)));
+    var wd = x.data.instant.details, ws = wd.wind_speed || 0, dir = (wd.wind_from_direction || 0) + 180;
+    var rv = p < 0.1 ? '0' : (p < 10 ? p.toFixed(1).replace('.', ',') : '' + Math.round(p));
+    var wcls = ws >= 14 ? ' stormy' : (ws >= 8 ? ' breezy' : '');
     html += '<div class="hour' + (p >= 0.2 ? ' wet' : '') + '"><div class="h">' + (idx === 0 ? 'nå' : pad(dt.getHours())) + '</div><div class="i">' + iconSvg(n1.summary.symbol_code) +
-      '</div><div class="t">' + Math.round(x.data.instant.details.air_temperature) + '°</div>' +
-      '<div class="bar"><i style="height:' + pct + '%"></i></div>' +
-      '<div class="p ' + (p < 0.1 ? 'zero' : '') + '">' + (p < 0.1 ? '–' : (p < 10 ? p.toFixed(1) : Math.round(p))) + '</div></div>';
+      '</div><div class="t">' + Math.round(wd.air_temperature) + '°</div>' +
+      '<div class="blk rain' + (p < 0.1 ? ' zero' : (p >= 0.2 ? ' wetb' : '')) + '"><div class="v">' + rv + '</div><div class="u">mm</div></div>' +
+      '<div class="blk wind' + wcls + '"><svg viewBox="0 0 24 24" style="-webkit-transform:rotate(' + Math.round(dir) + 'deg);transform:rotate(' + Math.round(dir) + 'deg)"><path d="M12 2 L19 20 L12 16 L5 20 Z" fill="currentColor"/></svg>' +
+      '<div class="v">' + Math.round(ws) + '</div><div class="u">m/s</div></div></div>';
   });
   $('hours').innerHTML = html;
 }
