@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Gangskjerm</title>
+<style>
+  :root {
+    --bg: #0e1620; --card: #17222f; --line: #263446;
+    --text: #f2f6fa; --muted: #8fa3b8; --accent: #ffd166; --good: #6bd99a; --warn: #ff7a7a;
+    --metro: #ff7a3d; --bus: #4fa3ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; cursor: none; }
+  body.dim { filter: brightness(.45); }
+  .screen { display: flex; height: 100vh; padding: 2vh 2vw; gap: 2vw; }
+
+  /* ---------- Weather (left) ---------- */
+  .weather { flex: 1.1; display: flex; flex-direction: column; min-width: 0; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; color: var(--muted); font-size: 2.6vh; }
+  .clock { font-size: 5vh; color: var(--text); font-weight: 600; letter-spacing: .02em; }
+  .now { display: flex; align-items: center; gap: 2vw; margin: 2vh 0 1vh; }
+  .now .icon { font-size: 18vh; line-height: 1; }
+  .now .temp { font-size: 20vh; font-weight: 700; line-height: 1; }
+  .now .temp small { font-size: 8vh; color: var(--muted); font-weight: 400; }
+  .now .meta { font-size: 3vh; color: var(--muted); line-height: 1.5; }
+  .now .meta b { color: var(--text); font-weight: 600; }
+  .summary { font-size: 3.4vh; color: var(--accent); margin-bottom: 2vh; min-height: 4.4vh; }
+  .hours { flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: .8vw; min-height: 0; }
+  .hour { background: var(--card); border-radius: 1.4vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-around; padding: 1.2vh .2vw; min-width: 0; }
+  .hour .h { font-size: 2.6vh; color: var(--muted); }
+  .hour .i { font-size: 5.6vh; line-height: 1; }
+  .hour .t { font-size: 3.4vh; font-weight: 600; }
+  .hour .p { font-size: 2.4vh; color: var(--bus); min-height: 3vh; }
+  .hour .p.zero { color: var(--line); }
+
+  /* ---------- Departures (right) ---------- */
+  .transit { flex: 1; display: flex; flex-direction: column; gap: 1.6vh; min-width: 0; }
+  .board { flex: 1; background: var(--card); border-radius: 1.6vh; padding: 1.6vh 1.6vw; display: flex; flex-direction: column; min-height: 0; }
+  .board h2 { display: flex; align-items: center; gap: .8vw; font-size: 3vh; font-weight: 600; margin-bottom: 1vh; }
+  .badge { display: inline-block; min-width: 4.2vh; text-align: center; padding: .2vh .8vh; border-radius: .8vh; color: #0e1620; font-weight: 800; font-size: 2.6vh; }
+  .badge.metro { background: var(--metro); } .badge.bus { background: var(--bus); }
+  .board h2 span.sub { color: var(--muted); font-weight: 400; font-size: 2.4vh; }
+  .rows { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: .6vh; }
+  .row:first-child { border-top: 0; padding-top: 0; }
+  .row .dest { font-size: 2.6vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 1vw; }
+  .row .when { font-size: 5vh; font-weight: 700; white-space: nowrap; }
+  .row:first-child .when { color: var(--good); font-size: 6vh; }
+  .row .when small { font-size: 2.4vh; color: var(--muted); font-weight: 400; margin-left: .6vw; }
+  .row .when .rt { color: var(--good); }
+  .empty { color: var(--muted); font-size: 2.6vh; }
+  .stale { position: fixed; right: 1vw; bottom: .6vh; font-size: 2vh; color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="screen">
+  <section class="weather">
+    <div class="top"><div id="place">Hjemme</div><div class="clock" id="clock">--:--</div></div>
+    <div class="now">
+      <div class="icon" id="nowIcon">·</div>
+      <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
+      <div class="meta" id="nowMeta"></div>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div class="hours" id="hours"></div>
+  </section>
+
+  <section class="transit">
+    <div class="board" id="b-hauger"><h2><span class="badge metro">3</span> Hauger <span class="sub">mot sentrum</span></h2><div class="rows"></div></div>
+    <div class="board" id="b-kolsas-t"><h2><span class="badge metro">3</span> Kolsås <span class="sub">mot sentrum</span></h2><div class="rows"></div></div>
+    <div class="board" id="b-kolsas-b"><h2><span class="badge bus">160</span> Kolsås buss <span class="sub">mot Nationaltheatret</span></h2><div class="rows"></div></div>
+  </section>
+</div>
+<div class="stale" id="stale"></div>
+
+<script>
+// ===== Konfigurasjon =====
+var CFG = {
+  lat: 59.92, lon: 10.51,                     // Bærum (avrundet)
+  clientName: 'privat-gangskjerm',            // Entur ber om et navn på klienten
+  boards: [
+    { el: 'b-hauger',   stop: 'NSR:StopPlace:58283', quay: 'NSR:Quay:7305', n: 3 },                    // Hauger, T3 mot Oslo
+    { el: 'b-kolsas-t', stop: 'NSR:StopPlace:58284', quay: 'NSR:Quay:7319', n: 3 },                    // Kolsås, T3 mot Oslo
+    { el: 'b-kolsas-b', stop: 'NSR:StopPlace:58284', quay: 'NSR:Quay:7324', line: '160', n: 3 }        // Kolsås, buss 160 mot sentrum
+  ],
+  dimFrom: 22, dimTo: 6                       // dimmet visning om natten
+};
+
+function $(id) { return document.getElementById(id); }
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function hhmm(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+var fails = { weather: 0, transit: 0 };
+
+// ===== Klokke + dimming =====
+function tick() {
+  var d = new Date();
+  $('clock').textContent = hhmm(d);
+  var h = d.getHours();
+  document.body.className = (h >= CFG.dimFrom || h < CFG.dimTo) ? 'dim' : '';
+  renderTimes();
+}
+
+// ===== Vær (MET / Yr) =====
+var ICONS = { clearsky: '☀️', fair: '🌤️', partlycloudy: '⛅', cloudy: '☁️', fog: '☁️',
+  rain: '🌧️', lightrain: '🌦️', heavyrain: '🌧️', sleet: '🌨️', lightsleet: '🌨️', heavysleet: '🌨️',
+  snow: '❄️', lightsnow: '🌨️', heavysnow: '❄️' };
+var TEXT = { clearsky: 'Klarvær', fair: 'Lettskyet', partlycloudy: 'Delvis skyet', cloudy: 'Skyet', fog: 'Tåke',
+  rain: 'Regn', lightrain: 'Lett regn', heavyrain: 'Mye regn', sleet: 'Sludd', lightsleet: 'Lett sludd', heavysleet: 'Mye sludd',
+  snow: 'Snø', lightsnow: 'Lett snø', heavysnow: 'Mye snø' };
+function base(code) { return (code || '').replace(/_(day|night|polartwilight)$/, ''); }
+function icon(code) {
+  var b = base(code), thunder = /thunder/.test(b);
+  b = b.replace(/(light|heavy)?(rain|sleet|snow)(showers)?(andthunder)?/, function (m, a, k) { return (a || '') + k; });
+  var ic = ICONS[b] || '🌡️';
+  if (thunder) ic = '⛈️';
+  if (/night/.test(code || '') && (b === 'clearsky' || b === 'fair')) ic = b === 'clearsky' ? '🌙' : '🌙';
+  return ic;
+}
+function label(code) {
+  var b = base(code).replace(/(showers)|(andthunder)/g, '');
+  var t = TEXT[b] || '';
+  return /thunder/.test(code || '') ? 'Torden' : t;
+}
+
+var weatherData = null;
+function loadWeather() {
+  fetch('https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + CFG.lat + '&lon=' + CFG.lon)
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (j) { weatherData = j.properties.timeseries; fails.weather = 0; renderWeather(); updateStale(); })
+    .catch(function () { fails.weather++; updateStale(); });
+}
+function renderWeather() {
+  if (!weatherData) return;
+  var now = new Date(), ts = weatherData.filter(function (x) { return new Date(x.time).getTime() > now.getTime() - 3600e3; });
+  if (!ts.length) return;
+  var cur = ts[0], d = cur.data.instant.details;
+  var code = (cur.data.next_1_hours || cur.data.next_6_hours || {}).summary;
+  code = code ? code.symbol_code : '';
+  $('nowIcon').textContent = icon(code);
+  $('nowTemp').textContent = Math.round(d.air_temperature);
+  $('nowMeta').innerHTML = '<b>' + label(code) + '</b><br>Vind ' + Math.round(d.wind_speed) + ' m/s<br>Luftfuktighet ' + Math.round(d.relative_humidity) + ' %';
+
+  // Resten av dagen: til midnatt, men minst 8 timer fremover
+  var midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+  var list = ts.filter(function (x) { return x.data.next_1_hours; });
+  var until = list.filter(function (x) { return new Date(x.time) < midnight; });
+  if (until.length < 8) until = list.slice(0, 8);
+  until = until.slice(0, 14);
+
+  var temps = until.map(function (x) { return x.data.instant.details.air_temperature; });
+  var rain = until.reduce(function (s, x) { return s + (x.data.next_1_hours.details.precipitation_amount || 0); }, 0);
+  var firstRain = null;
+  for (var i = 0; i < until.length; i++) if ((until[i].data.next_1_hours.details.precipitation_amount || 0) >= 0.2) { firstRain = until[i]; break; }
+  var s = 'Høyest ' + Math.round(Math.max.apply(null, temps)) + '° · lavest ' + Math.round(Math.min.apply(null, temps)) + '°';
+  if (!firstRain) s += ' · ingen nedbør';
+  else s += ' · ' + (new Date(firstRain.time).getTime() - now.getTime() < 3600e3 ? 'nedbør nå' : 'nedbør fra kl. ' + pad(new Date(firstRain.time).getHours())) + ' (' + rain.toFixed(1) + ' mm)';
+  $('summary').textContent = s;
+
+  var html = '';
+  until.forEach(function (x) {
+    var dt = new Date(x.time), n1 = x.data.next_1_hours, p = n1.details.precipitation_amount || 0;
+    html += '<div class="hour"><div class="h">' + pad(dt.getHours()) + '</div><div class="i">' + icon(n1.summary.symbol_code) +
+      '</div><div class="t">' + Math.round(x.data.instant.details.air_temperature) + '°</div>' +
+      '<div class="p ' + (p < 0.1 ? 'zero' : '') + '">' + (p < 0.1 ? '–' : p.toFixed(1)) + '</div></div>';
+  });
+  $('hours').innerHTML = html;
+}
+
+// ===== Avganger (Entur) =====
+var departures = {};
+function loadTransit() {
+  var stops = {};
+  CFG.boards.forEach(function (b) { stops[b.stop] = 1; });
+  var ids = Object.keys(stops), q = '{', i;
+  for (i = 0; i < ids.length; i++) {
+    q += 's' + i + ':stopPlace(id:"' + ids[i] + '"){estimatedCalls(numberOfDepartures:80,timeRange:10800){realtime cancellation ' +
+      'expectedDepartureTime destinationDisplay{frontText} quay{id} serviceJourney{line{publicCode}}}}';
+  }
+  q += '}';
+  fetch('https://api.entur.io/journey-planner/v3/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'ET-Client-Name': CFG.clientName },
+    body: JSON.stringify({ query: q })
+  })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (j) {
+      var byStop = {};
+      ids.forEach(function (id, k) { byStop[id] = (j.data['s' + k] || {}).estimatedCalls || []; });
+      CFG.boards.forEach(function (b) {
+        departures[b.el] = byStop[b.stop].filter(function (c) {
+          return !c.cancellation && c.quay.id === b.quay && (!b.line || c.serviceJourney.line.publicCode === b.line);
+        }).slice(0, b.n);
+      });
+      fails.transit = 0; renderTimes(); updateStale();
+    })
+    .catch(function () { fails.transit++; updateStale(); });
+}
+function renderTimes() {
+  var now = Date.now();
+  CFG.boards.forEach(function (b) {
+    var rows = $(b.el).querySelector('.rows'), list = (departures[b.el] || []).filter(function (c) { return new Date(c.expectedDepartureTime).getTime() > now - 20e3; });
+    if (!departures[b.el]) { rows.innerHTML = '<div class="empty">Laster …</div>'; return; }
+    if (!list.length) { rows.innerHTML = '<div class="empty">Ingen avganger de neste timene</div>'; return; }
+    rows.innerHTML = list.map(function (c) {
+      var t = new Date(c.expectedDepartureTime), mins = Math.floor((t.getTime() - now) / 60000);
+      var when = mins < 1 ? 'nå' : (mins < 20 ? mins + ' min' : hhmm(t));
+      return '<div class="row"><div class="dest">' + c.destinationDisplay.frontText + '</div><div class="when">' + when +
+        '<small>' + (mins < 20 ? hhmm(t) : '') + (c.realtime ? ' <span class="rt">●</span>' : '') + '</small></div></div>';
+    }).join('');
+  });
+}
+function updateStale() {
+  var m = [];
+  if (fails.weather >= 3) m.push('vær utdatert');
+  if (fails.transit >= 3) m.push('avganger utdatert');
+  $('stale').textContent = m.length ? '⚠ ' + m.join(' · ') : '';
+}
+
+tick(); setInterval(tick, 15000);
+loadWeather(); setInterval(loadWeather, 10 * 60e3);
+loadTransit(); setInterval(loadTransit, 30e3);
+// Full omlasting hver natt, så en evig kjørende side holder seg frisk
+setInterval(function () { var d = new Date(); if (d.getHours() === 4 && d.getMinutes() === 0) location.reload(); }, 60e3);
+</script>
+</body>
+</html>
