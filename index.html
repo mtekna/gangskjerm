@@ -34,12 +34,14 @@
 
   /* ---------- Været nå ---------- */
   .now { display: flex; align-items: center; height: 21vh; margin-top: 1vh; }
-  .now .icon { width: 19vh; height: 19vh; margin-right: 1.5vw; flex: none; }
+  .now .icon { width: 15vh; height: 15vh; margin-right: 1vw; flex: none; }
   .now .icon svg { width: 100%; height: 100%; display: block; }
-  .now .temp { font-size: 19vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
-  .now .temp small { font-size: 8vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1vh; }
-  .now .meta { margin-left: 2vw; font-size: 3vh; color: var(--muted); line-height: 1.45; min-width: 0; }
-  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 3.6vh; }
+  .now .temp { font-size: 17vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
+  .now .temp small { font-size: 7vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1vh; }
+  .now .meta { margin-left: 1.4vw; font-size: 2.8vh; color: var(--muted); line-height: 1.45; min-width: 0; }
+  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 3.4vh; }
+  .now .kid { margin-left: auto; flex: none; width: 14.4vh; height: 21vh; }
+  .now .kid svg { width: 100%; height: 100%; display: block; }
 
   /* ---------- Handling ---------- */
   .advice { margin: 1.6vh 0; padding: 1.6vh 1.6vw; border-radius: 1.6vh; background: var(--card); height: 15vh;
@@ -112,6 +114,7 @@
       <div class="icon" id="nowIcon"></div>
       <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
       <div class="meta" id="nowMeta"></div>
+      <div class="kid" id="kid"></div>
     </div>
     <div class="advice" id="advice"><div class="a1">Henter vær …</div><div class="a2"></div></div>
     <div class="hours" id="hours"></div>
@@ -141,7 +144,7 @@ var CFG = {
   staleAfterMin: 4                            // avganger eldre enn dette markeres som utdatert
 };
 
-// Demo: ?demo=1 (regn), ?demo=fog | snow | clear | night | cancel | error | thunder
+// Demo: ?demo=1 (regn), ?demo=fog | snow | clear | night | cancel | error | thunder, valgfritt &temp=-5 for å overstyre temperatur
 var DEMO = (function () { var m = /[?&]demo=([^&]*)/.exec(location.search); return m ? (m[1] === '1' ? 'rain' : m[1]) : ''; })();
 
 function $(id) { return document.getElementById(id); }
@@ -268,7 +271,57 @@ function makeAdvice(ts, until, now, d, code) {
   else if (minT <= 18) a2 = 'Tynn jakke eller genser holder';
   else a2 = 'Ingen jakke nødvendig';
   if (maxWind >= 10) a2 += ' · det blåser (' + Math.round(maxWind) + ' m/s)';
-  return { kind: kind, a1: a1, a2: a2 };
+  return { kind: kind, a1: a1, a2: a2, minT: minT, wet: !!first, snow: noun === 'snø', wind: maxWind,
+    sunny: !first && !parseCode(code).night && /clearsky|fair/.test(parseCode(code).k) };
+}
+// Barn som viser hva man bør ha på seg (tilpasses temperatur, nedbør og vind)
+function kidSvg(a) {
+  var m = a.minT, wet = a.wet, lvl = m <= 0 ? 'frost' : (m <= 7 ? 'cold' : (m <= 13 ? 'cool' : (m <= 18 ? 'mild' : 'warm')));
+  var skin = '#f2c9a0', pants = '#3f5a8a', top, hat = '', short = false, boots = false, hood = false, mitt = false, scarf = false, puffy = false, g = '';
+  if (lvl === 'frost') { top = '#3a6fd8'; pants = '#2d3a4f'; boots = true; mitt = true; scarf = true; puffy = true; hat = '#e63946'; }
+  else if (lvl === 'cold') { top = '#f08a24'; pants = '#2d3a4f'; boots = true; hat = '#1fa39a'; puffy = true; }
+  else if (lvl === 'cool') { top = '#4cae6a'; }
+  else if (lvl === 'mild') { top = '#8e6bd1'; }
+  else { top = '#ff6b6b'; short = true; if (a.sunny) hat = 'cap'; }
+  if (wet) { top = '#ffd23f'; boots = 'rubber'; if (lvl === 'cool' || lvl === 'mild' || lvl === 'warm') { hood = true; hat = ''; } }
+  var sleeveH = short ? 14 : 38;
+  // regnhette bak hodet
+  if (hood) g += '<circle cx="50" cy="29" r="21" fill="#ffd23f"/>';
+  // bein
+  if (short) g += '<rect x="37" y="104" width="9" height="28" rx="4" fill="' + skin + '"/><rect x="54" y="104" width="9" height="28" rx="4" fill="' + skin + '"/>' +
+    '<rect x="35" y="88" width="13" height="20" rx="5" fill="' + pants + '"/><rect x="52" y="88" width="13" height="20" rx="5" fill="' + pants + '"/>';
+  else g += '<rect x="35" y="88" width="13" height="46" rx="5" fill="' + pants + '"/><rect x="52" y="88" width="13" height="46" rx="5" fill="' + pants + '"/>';
+  // sko
+  if (boots) { var bc = boots === 'rubber' ? '#ffc400' : '#3b3b46'; g += '<rect x="34" y="114" width="15" height="26" rx="4" fill="' + bc + '"/><rect x="51" y="114" width="15" height="26" rx="4" fill="' + bc + '"/>'; }
+  else g += '<rect x="32" y="130" width="17" height="10" rx="5" fill="#f4f6f8"/><rect x="51" y="130" width="17" height="10" rx="5" fill="#f4f6f8"/><rect x="32" y="137" width="17" height="3" rx="1.5" fill="#c5ccd4"/><rect x="51" y="137" width="17" height="3" rx="1.5" fill="#c5ccd4"/>';
+  // armer (hud under korte ermer)
+  if (short) g += '<rect x="22.5" y="58" width="8" height="28" rx="4" fill="' + skin + '"/><rect x="69.5" y="58" width="8" height="28" rx="4" fill="' + skin + '"/>';
+  // overkropp
+  var tx = puffy ? 29 : 31, tw = puffy ? 42 : 38;
+  g += '<rect x="' + tx + '" y="46" width="' + tw + '" height="46" rx="9" fill="' + top + '"/>';
+  g += '<rect x="' + (puffy ? 20 : 21) + '" y="49" width="12" height="' + sleeveH + '" rx="6" fill="' + top + '"/><rect x="' + (puffy ? 68 : 67) + '" y="49" width="12" height="' + sleeveH + '" rx="6" fill="' + top + '"/>';
+  if (lvl === 'cold' || lvl === 'frost' || wet || lvl === 'cool') g += '<rect x="49" y="50" width="2" height="42" fill="rgba(0,0,0,.18)"/>';
+  if (puffy) g += '<path d="M31 62 H69 M31 76 H69" stroke="rgba(0,0,0,.14)" stroke-width="1.5"/>';
+  // hender
+  g += '<circle cx="26" cy="' + (short ? 87 : 89) + '" r="5.5" fill="' + (mitt ? '#e63946' : skin) + '"/><circle cx="74" cy="' + (short ? 87 : 89) + '" r="5.5" fill="' + (mitt ? '#e63946' : skin) + '"/>';
+  // hals, skjerf, hode
+  g += '<rect x="45" y="40" width="10" height="9" fill="' + skin + '"/>';
+  if (scarf) g += '<rect x="34" y="42" width="32" height="9" rx="4.5" fill="#f4f6f8"/><rect x="56" y="48" width="7" height="16" rx="3" fill="#f4f6f8"/>';
+  g += '<circle cx="50" cy="28" r="15" fill="' + skin + '"/>';
+  if (!hat && !hood) g += '<path d="M34 26 Q33 10 50 10 Q67 10 66 26 Q59 19 50 20 Q41 19 34 26 Z" fill="#6b4a2f"/>';
+  if (hood) g += '<path d="M33 26 Q32 8 50 8 Q68 8 67 26 Q60 17 50 17 Q40 17 33 26 Z" fill="#ffd23f"/>';
+  g += '<circle cx="44" cy="29" r="1.8" fill="#2b2b2b"/><circle cx="56" cy="29" r="1.8" fill="#2b2b2b"/>' +
+    '<path d="M44 35 Q50 40 56 35" stroke="#2b2b2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+    '<circle cx="40" cy="34" r="2.6" fill="#f2a58e" opacity=".6"/><circle cx="60" cy="34" r="2.6" fill="#f2a58e" opacity=".6"/>';
+  // lue / caps
+  if (hat === 'cap') g += '<path d="M34 22 Q34 8 50 8 Q66 8 66 22 Z" fill="#2fb8ff"/><rect x="50" y="19" width="26" height="5" rx="2.5" fill="#1b8fd1"/>';
+  else if (hat) g += '<path d="M33 22 Q33 4 50 4 Q67 4 67 22 Z" fill="' + hat + '"/><rect x="32" y="18" width="36" height="8" rx="4" fill="rgba(255,255,255,.35)"/><circle cx="50" cy="3.5" r="5" fill="#f4f6f8"/>';
+  // nedbør og vind rundt barnet
+  var i, dx = [8, 90, 14, 86, 5, 94];
+  if (wet && !a.snow) for (i = 0; i < 6; i++) g += '<path d="M' + dx[i] + ' ' + (14 + i * 20) + ' l-3 8" stroke="#5aaeff" stroke-width="2" stroke-linecap="round"/>';
+  if (wet && a.snow) for (i = 0; i < 6; i++) g += '<circle cx="' + dx[i] + '" cy="' + (16 + i * 20) + '" r="2.6" fill="#e8f2ff"/>';
+  if (a.wind >= 10) g += '<path d="M2 50 h12 M0 60 h16 M3 70 h10" stroke="#9bb0c5" stroke-width="2" stroke-linecap="round" opacity=".7"/>';
+  return '<svg viewBox="0 0 100 146" xmlns="http://www.w3.org/2000/svg">' + g + '</svg>';
 }
 function renderWeather() {
   if (!weatherData) {
@@ -293,6 +346,7 @@ function renderWeather() {
   until = until.slice(0, CFG.hoursShown);
 
   var adv = makeAdvice(ts, until, now, d, code);
+  $('kid').innerHTML = kidSvg(adv);
   var el = $('advice');
   el.className = 'advice ' + adv.kind;
   el.innerHTML = '<div class="a1">' + adv.a1 + '</div><div class="a2">' + adv.a2 + '</div>';
@@ -399,6 +453,7 @@ function updateStale() {
 function demoWeather(kind) {
   var now = new Date(), ts = [], i, t, codes, temp = { rain: 9, fog: 6, snow: -3, clear: 19, night: 4, cancel: 11, thunder: 17 }[kind];
   if (temp === undefined) temp = 9;
+  var tm = /[?&]temp=(-?\d+)/.exec(location.search); if (tm) temp = parseInt(tm[1], 10);
   for (i = 0; i < 30; i++) {
     t = new Date(now.getTime() + (i - 0) * 3600e3); t.setMinutes(0, 0, 0);
     var sym = 'partlycloudy_day', pr = 0, h = t.getHours();
