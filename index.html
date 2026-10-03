@@ -182,7 +182,7 @@
 
 <div class="page">
   <div class="routine">
-    <div class="rtop"><div class="ttl">Morgenrutine<span id="rdate"></span></div><div class="rclock" id="rclock">--:--</div></div>
+    <div class="rtop"><div class="ttl"><i id="rtitle" style="font-style:normal">Morgenrutine</i><span id="rdate"></span></div><div class="rclock" id="rclock">--:--</div></div>
     <div class="cols" id="cols"></div>
   </div>
 </div>
@@ -654,13 +654,23 @@ var KIDS = [
   { id: 'miriam',   name: 'Miriam',   color: '#ff7fb0', shirt: '#ff7fb0', hair: 'long',  hairColor: '#dcb86e', glasses: true },
   { id: 'benjamin', name: 'Benjamin', color: '#5fe39a', shirt: '#5fe39a', hair: 'short', hairColor: '#ecd48e' }
 ];
-var TASKS = [
-  { id: 'dress',     text: 'Kle på seg',      icon: 'shirt' },
-  { id: 'breakfast', text: 'Spise frokost',   icon: 'bowl' },
-  { id: 'teeth',     text: 'Pusse tenner',    icon: 'teeth' },
-  { id: 'bag',       text: 'Hente sekken',    icon: 'bag' },
-  { id: 'coat',      text: 'Ta på yttertøy',  icon: 'coat', dyn: true }
-];
+var LISTS = {
+  morning: { title: 'Morgenrutine', tasks: [
+    { id: 'dress',     text: 'Kle på seg',      icon: 'shirt' },
+    { id: 'breakfast', text: 'Spise frokost',   icon: 'bowl' },
+    { id: 'teeth',     text: 'Pusse tenner',    icon: 'teeth' },
+    { id: 'bag',       text: 'Hente sekken',    icon: 'bag' },
+    { id: 'coat',      text: 'Ta på yttertøy',  icon: 'coat', dyn: true }
+  ] },
+  after: { title: 'Etter skolen', tasks: [
+    { id: 'hang',      text: 'Henge opp klærne',          icon: 'hanger' },
+    { id: 'lunchbox',  text: 'Ta ut matboks fra sekken',  icon: 'lunchbox' },
+    { id: 'hangbag',   text: 'Henge opp sekken',          icon: 'hookbag' }
+  ] }
+};
+var AFTER_HOUR = 13;   // fra dette klokkeslettet (norsk tid) vises «Etter skolen»
+var curList = '', TASKS = LISTS.morning.tasks;
+var LISTTEST = (function () { var m = /[?&]list=(morning|after)/.exec(location.search); return m ? m[1] : ''; })();
 var SK = '#f2c9a0';
 
 function avatarSvg(k) {
@@ -748,6 +758,16 @@ function iconSvg2(name) {
   else if (name === 'bag') g = '<path d="M20 20 Q8 34 12 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M44 20 Q56 34 52 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/>' +
     '<path d="M25 14 Q25 4 32 4 Q39 4 39 14" fill="none" stroke="#c85a14" stroke-width="3.4"/><rect x="14" y="12" width="36" height="46" rx="13" fill="#ff8a3d"/>' +
     '<rect x="20" y="20" width="24" height="10" rx="5" fill="#f26a14"/><circle cx="32" cy="25" r="2.4" fill="#ffd166"/><rect x="20" y="36" width="24" height="16" rx="6" fill="#f26a14"/><path d="M20 37 H44" stroke="#ffe0c2" stroke-width="2"/>';
+  else if (name === 'hanger') g = '<path d="M32 17 V12 Q32 5 39 5 Q45 5 45 10" stroke="#cfd6de" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M32 17 L11 29 M32 17 L53 29" stroke="#cfd6de" stroke-width="3" stroke-linecap="round"/>' +
+    '<g transform="translate(9.6,22) scale(.7)">' + jacketPath('#4fa3ff', { zip: true }) + '</g>';
+  else if (name === 'lunchbox') g = '<g transform="translate(-2,-4) scale(.62)"><path d="M20 20 Q8 34 12 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="14" y="12" width="36" height="46" rx="13" fill="#ff8a3d"/><rect x="20" y="20" width="24" height="10" rx="5" fill="#f26a14"/></g>' +
+    '<path d="M28 24 Q28 18 34 18 H44 Q50 18 50 24" fill="none" stroke="#2f7fd6" stroke-width="3.4"/>' +
+    '<rect x="14" y="28" width="48" height="30" rx="7" fill="#4fa3ff"/><rect x="14" y="22" width="48" height="14" rx="6" fill="#2f7fd6"/><rect x="34" y="31" width="8" height="8" rx="2" fill="#ffd166"/>' +
+    '<path d="M52 44 l1.8 4 4.2 .6 -3.1 3 .8 4.3 -3.7 -2 -3.7 2 .8 -4.3 -3.1 -3 4.2 -.6z" fill="#ffd166"/>';
+  else if (name === 'hookbag') g = '<g transform="translate(5,9) scale(.86)"><path d="M20 20 Q8 34 12 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M44 20 Q56 34 52 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+    '<path d="M25 14 Q25 4 32 4 Q39 4 39 14" fill="none" stroke="#c85a14" stroke-width="3.4"/><rect x="14" y="12" width="36" height="46" rx="13" fill="#ff8a3d"/>' +
+    '<rect x="20" y="20" width="24" height="10" rx="5" fill="#f26a14"/><circle cx="32" cy="25" r="2.4" fill="#ffd166"/><rect x="20" y="36" width="24" height="16" rx="6" fill="#f26a14"/><path d="M20 37 H44" stroke="#ffe0c2" stroke-width="2"/></g>' +
+    '<rect x="22" y="1" width="20" height="5" rx="2.5" fill="#9bb0c5"/><path d="M32 5 V12 Q32 17 37 17 Q42 17 42 12" stroke="#cfd6de" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
   return '<svg viewBox="0 0 64 64">' + g + '</svg>';
 }
 
@@ -815,8 +835,10 @@ function checkReset() {
   var o = osl(new Date());
   $('rdate').textContent = DAYS[o.getDay()] + ' ' + o.getDate() + '. ' + MONTHS[o.getMonth()];
   if (routine.d !== todayKey()) { routine = { d: todayKey(), c: {} }; saveRoutine(); refreshRoutine(); }
+  var want = LISTTEST || (o.getHours() >= AFTER_HOUR ? 'after' : 'morning');
+  if (want !== curList) { curList = want; TASKS = LISTS[want].tasks; $('rtitle').textContent = LISTS[want].title; buildRoutine(); }
 }
-loadRoutine(); buildRoutine(); checkReset();
+loadRoutine(); checkReset();
 if (/[?&]page=2/.test(location.search)) go(1, true);
 
 tick(); setInterval(tick, 10000);
