@@ -111,9 +111,49 @@
   .row.cancel { opacity: .85; }
   .row.empty .det { font-size: 2.8vh; }
   .board.old .rows { opacity: .35; }
+
+  /* ---------- Sider (sveip) ---------- */
+  .pager { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; -ms-touch-action: none; touch-action: none; }
+  .track { display: flex; width: 200vw; height: 100vh; -webkit-transition: -webkit-transform .35s ease; transition: transform .35s ease; will-change: transform; }
+  .track.drag { -webkit-transition: none; transition: none; }
+  .page { flex: none; width: 100vw; height: 100vh; position: relative; }
+  .dots { position: fixed; left: 0; right: 0; bottom: .5vh; display: flex; justify-content: center; z-index: 5; pointer-events: none; }
+  .dots i { display: block; width: 1.3vh; height: 1.3vh; border-radius: 50%; background: var(--faint); margin: 0 .7vh; -webkit-transition: background .3s, -webkit-transform .3s; transition: background .3s, transform .3s; }
+  .dots i.on { background: var(--text); -webkit-transform: scale(1.35); transform: scale(1.35); }
+
+  /* ---------- Morgenrutine ---------- */
+  .routine { height: 100%; padding: 2.2vh 2vw 3vh; display: flex; flex-direction: column; }
+  .rtop { display: flex; justify-content: space-between; align-items: center; height: 8vh; flex: none; }
+  .rtop .ttl { font-size: 4.4vh; font-weight: 700; }
+  .rtop .ttl span { color: var(--muted); font-weight: 400; font-size: 3vh; margin-left: 1.2vw; }
+  .rtop .rclock { font-size: 7vh; font-weight: 700; line-height: 1; }
+  .cols { -webkit-box-flex: 1; flex: 1; display: flex; min-height: 0; margin-top: 1vh; }
+  .col { -webkit-box-flex: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--card); border-radius: 1.8vh; padding: 1.4vh 1.2vw; border-top: 1vh solid var(--faint); margin-right: 1.4vw; }
+  .col:last-child { margin-right: 0; }
+  .col h3 { display: flex; align-items: center; height: 11vh; flex: none; font-size: 5vh; font-weight: 700; }
+  .col h3 svg { width: 9.6vh; height: 9.6vh; flex: none; margin-right: 1vw; display: block; }
+  .col h3 .ok { margin-left: auto; font-size: 3vh; color: var(--good); font-weight: 700; opacity: 0; -webkit-transition: opacity .3s; transition: opacity .3s; white-space: nowrap; }
+  .col.done h3 .ok { opacity: 1; }
+  .col.done { border-top-color: var(--good) !important; }
+  .tasks { -webkit-box-flex: 1; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .task { -webkit-box-flex: 1; flex: 1; display: flex; align-items: center; min-height: 0; border-top: 1px solid var(--line); padding: 0 .4vw; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+  .task:first-child { border-top: 0; }
+  .task .circle { flex: none; width: 8.4vh; height: 8.4vh; border-radius: 50%; border: .9vh solid var(--faint); margin-right: .9vw; display: flex; align-items: center; justify-content: center; -webkit-transition: background .2s, border-color .2s; transition: background .2s, border-color .2s; }
+  .task .circle svg { width: 70%; height: 70%; opacity: 0; -webkit-transform: scale(.4); transform: scale(.4); -webkit-transition: opacity .2s, -webkit-transform .2s; transition: opacity .2s, transform .2s; }
+  .task .pic { flex: none; width: 9.6vh; height: 9.6vh; margin-right: .9vw; -webkit-transition: opacity .2s; transition: opacity .2s; }
+  .task .pic svg { width: 100%; height: 100%; display: block; }
+  .task .txt { -webkit-box-flex: 1; flex: 1; min-width: 0; font-size: 3.5vh; font-weight: 600; line-height: 1.12; -webkit-transition: color .2s; transition: color .2s; }
+  .task .txt small { display: block; margin-top: .4vh; font-size: 2.2vh; font-weight: 400; color: var(--muted); line-height: 1.2; }
+  .task.on .circle { background: var(--good); border-color: var(--good); }
+  .task.on .circle svg { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+  .task.on .pic { opacity: .4; }
+  .task.on .txt { color: var(--muted); text-decoration: line-through; }
+  .task.on .txt small { text-decoration: none; }
 </style>
 </head>
 <body>
+<div class="pager" id="pager"><div class="track" id="track">
+<div class="page">
 <div class="screen">
   <section class="upper">
     <div class="head">
@@ -138,6 +178,16 @@
     </div>
   </section>
 </div>
+</div>
+
+<div class="page">
+  <div class="routine">
+    <div class="rtop"><div class="ttl">Morgenrutine<span id="rdate"></span></div><div class="rclock" id="rclock">--:--</div></div>
+    <div class="cols" id="cols"></div>
+  </div>
+</div>
+</div></div>
+<div class="dots" id="dots"><i class="on"></i><i></i></div>
 
 <script>
 // ===== Konfigurasjon =====
@@ -216,6 +266,8 @@ function renderFlag(d) {
 function tick() {
   var real = new Date(), d = osl(real);
   $('clock').textContent = hhmm(real);
+  $('rclock').textContent = hhmm(real);
+  checkReset();
   renderFlag(d);
   var h = d.getHours();
   var dim = DEMO === 'night' || (h >= CFG.dimFrom || h < CFG.dimTo);
@@ -407,6 +459,7 @@ function renderWeather() {
 
   var adv = makeAdvice(ts, until, now, d, code);
   $('kid').innerHTML = kidSvg(adv);
+  updateOuterwear(adv);
   var el = $('advice');
   el.className = 'advice ' + adv.kind;
   el.innerHTML = '<div class="a1">' + adv.a1 + '</div><div class="a2">' + adv.a2 + '</div>';
@@ -543,6 +596,214 @@ function demoTransit(kind) {
   });
   lastOk.transit = now; fails.transit = 0;
 }
+
+// ===== Sider: sveip mellom visninger =====
+CFG.autoReturnMin = 5;   // gå tilbake til side 1 etter så mange minutter uten berøring (0 = av)
+var page = 0, lastAct = Date.now();
+function go(n, instant) {
+  page = n;
+  var tr = $('track');
+  tr.className = 'track' + (instant ? ' drag' : '');
+  tr.style.webkitTransform = tr.style.transform = 'translate3d(' + (-n * 100) + 'vw,0,0)';
+  var d = $('dots').children, i;
+  for (i = 0; i < d.length; i++) d[i].className = i === n ? 'on' : '';
+}
+(function () {
+  var pg = $('pager'), tr = $('track'), sx = 0, sy = 0, dx = 0, mode = '', down = false, t0 = 0;
+  function pos(e) { var t = e.touches && e.touches.length ? e.touches[0] : (e.changedTouches && e.changedTouches.length ? e.changedTouches[0] : e); return { x: t.clientX, y: t.clientY }; }
+  function start(e) { var p = pos(e); sx = p.x; sy = p.y; dx = 0; mode = ''; down = true; t0 = Date.now(); lastAct = t0; }
+  function move(e) {
+    if (!down) return;
+    var p = pos(e), mx = p.x - sx, my = p.y - sy;
+    if (!mode && (Math.abs(mx) > 8 || Math.abs(my) > 8)) mode = Math.abs(mx) > Math.abs(my) ? 'h' : 'v';
+    if (mode !== 'h') return;
+    if (e.cancelable) e.preventDefault();
+    dx = mx;
+    if ((page === 0 && dx > 0) || (page === 1 && dx < 0)) dx = dx / 4;       // motstand i endene
+    tr.className = 'track drag';
+    tr.style.webkitTransform = tr.style.transform = 'translate3d(' + (-page * window.innerWidth + dx) + 'px,0,0)';
+  }
+  function end() {
+    if (!down) return; down = false;
+    if (mode === 'h') {
+      window.__swiped = Date.now();
+      var fast = Math.abs(dx) > 40 && Date.now() - t0 < 300;
+      if (dx < -window.innerWidth * 0.15 || (fast && dx < 0)) go(1);
+      else if (dx > window.innerWidth * 0.15 || (fast && dx > 0)) go(0);
+      else go(page);
+    }
+    mode = '';
+  }
+  pg.addEventListener('touchstart', start, false);
+  pg.addEventListener('touchmove', move, false);
+  pg.addEventListener('touchend', end, false);
+  pg.addEventListener('touchcancel', end, false);
+  pg.addEventListener('mousedown', start, false);
+  window.addEventListener('mousemove', move, false);
+  window.addEventListener('mouseup', end, false);
+  document.addEventListener('keydown', function (e) { lastAct = Date.now(); if (e.keyCode === 39) go(1); if (e.keyCode === 37) go(0); }, false);
+  $('dots').style.pointerEvents = 'none';
+  setInterval(function () {
+    if (CFG.autoReturnMin > 0 && page === 1 && Date.now() - lastAct > CFG.autoReturnMin * 60e3) go(0);
+  }, 20e3);
+})();
+
+// ===== Morgenrutine =====
+var KIDS = [
+  { id: 'samuel',   name: 'Samuel',   color: '#4fa3ff', shirt: '#4fa3ff', hair: 'short', hairColor: '#6b4a2f' },
+  { id: 'miriam',   name: 'Miriam',   color: '#ff7fb0', shirt: '#ff7fb0', hair: 'long',  hairColor: '#b9772e' },
+  { id: 'benjamin', name: 'Benjamin', color: '#5fe39a', shirt: '#5fe39a', hair: 'messy', hairColor: '#e0b04a' }
+];
+var TASKS = [
+  { id: 'dress',     text: 'Kle på seg',      icon: 'shirt' },
+  { id: 'breakfast', text: 'Spise frokost',   icon: 'bowl' },
+  { id: 'teeth',     text: 'Pusse tenner',    icon: 'teeth' },
+  { id: 'bag',       text: 'Hente sekken',    icon: 'bag' },
+  { id: 'coat',      text: 'Ta på yttertøy',  icon: 'coat', dyn: true }
+];
+var SK = '#f2c9a0';
+
+function avatarSvg(k) {
+  var id = 'av-' + k.id, g = '<clipPath id="' + id + '"><circle cx="32" cy="32" r="30"/></clipPath>' +
+    '<circle cx="32" cy="32" r="31" fill="' + k.color + '" fill-opacity=".28" stroke="' + k.color + '" stroke-width="2"/>' +
+    '<g clip-path="url(#' + id + ')"><ellipse cx="32" cy="68" rx="25" ry="20" fill="' + k.shirt + '"/>';
+  if (k.hair === 'long') g += '<path d="M15 30 Q13 8 32 8 Q51 8 49 30 L49 48 Q49 54 42 52 L22 52 Q15 54 15 48Z" fill="' + k.hairColor + '"/>';
+  g += '<rect x="28" y="40" width="8" height="9" fill="' + SK + '"/><circle cx="32" cy="29" r="14" fill="' + SK + '"/>';
+  if (k.hair === 'long') g += '<path d="M18 28 Q18 13 32 13 Q46 13 46 28 Q38 19 32 21 Q26 19 18 28Z" fill="' + k.hairColor + '"/>' +
+    '<path d="M42 13 l8 -4 v11 z M42 13 l-5 -5 v10 z" fill="' + k.color + '"/><circle cx="42" cy="13" r="2.4" fill="#fff"/>';
+  else if (k.hair === 'messy') g += '<path d="M18 27 Q16 11 32 11 Q48 11 46 27 Q40 19 32 21 Q24 19 18 27Z" fill="' + k.hairColor + '"/><path d="M24 12 Q28 3 34 10 Q38 4 42 12Z" fill="' + k.hairColor + '"/>';
+  else g += '<path d="M18 27 Q17 11 32 11 Q47 11 46 27 Q40 19 32 20 Q24 19 18 27Z" fill="' + k.hairColor + '"/>';
+  g += '<circle cx="27" cy="30" r="1.7" fill="#2b2b2b"/><circle cx="37" cy="30" r="1.7" fill="#2b2b2b"/>' +
+    '<path d="M27 35 Q32 39.5 37 35" stroke="#2b2b2b" stroke-width="1.7" fill="none" stroke-linecap="round"/>' +
+    '<circle cx="23" cy="35" r="2.4" fill="#f2a58e" opacity=".55"/><circle cx="41" cy="35" r="2.4" fill="#f2a58e" opacity=".55"/></g>';
+  return '<svg viewBox="0 0 64 64">' + g + '</svg>';
+}
+
+function jacketPath(color, o) {
+  o = o || {};
+  var g = '<path d="M20 12 Q32 8 44 12 L58 36 L50 42 L44 32 V56 H20 V32 L14 42 L6 36 Z" fill="' + color + '"/>';
+  if (o.zip) g += '<path d="M32 12 V56" stroke="rgba(0,0,0,.28)" stroke-width="2"/>';
+  if (o.puffy) g += '<path d="M20 26 H44 M20 38 H44 M20 49 H44" stroke="rgba(0,0,0,.16)" stroke-width="1.6"/>';
+  if (o.rib) g += '<path d="M25 11 Q32 18 39 11" stroke="rgba(0,0,0,.28)" stroke-width="3.5" fill="none"/><path d="M8 37 L14 41 M56 37 L50 41" stroke="rgba(0,0,0,.25)" stroke-width="3.5"/>';
+  else g += '<path d="M25 11 Q32 17 39 11" stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none"/>';
+  return g;
+}
+function beanie(c) { return '<path d="M42 18 Q42 4 53 4 Q64 4 64 18Z" fill="' + c + '"/><rect x="41" y="15" width="24" height="6" rx="3" fill="rgba(255,255,255,.4)"/><circle cx="53" cy="3.5" r="3.4" fill="#f4f6f8"/>'; }
+function mitten(c) { return '<path d="M45 62 V48 Q45 42 51 42 Q57 42 57 48 V62Z" fill="' + c + '"/><ellipse cx="44.5" cy="50" rx="3" ry="4.5" fill="' + c + '"/>'; }
+function boot(c) { return '<path d="M44 34 H54 V54 Q54 58 58 58 H64 V63 H44Z" fill="' + c + '"/><rect x="44" y="34" width="10" height="5" fill="rgba(0,0,0,.18)"/>'; }
+
+function outerLevel(a) { var m = a.minT; return m <= 0 ? 'frost' : (m <= 7 ? 'cold' : (m <= 13 ? 'cool' : (m <= 18 ? 'mild' : 'warm'))); }
+function outerSvg(a) {
+  var lvl = outerLevel(a), g = '', big = '<g transform="translate(-1,6) scale(.8)">', i;
+  if (a.wet) {
+    g = big + jacketPath('#ffd23f', { zip: true }) + '<path d="M22 12 Q32 -1 42 12 Q32 8 22 12Z" fill="#e0a800"/></g>' + boot('#ffc400');
+    if (lvl === 'frost' || lvl === 'cold') g += beanie('#1fa39a');
+    if (a.snow) for (i = 0; i < 4; i++) g += '<circle cx="' + (6 + i * 9) + '" cy="' + (4 + (i % 2) * 5) + '" r="2.2" fill="#e8f2ff"/>';
+    else g += '<path d="M6 4 l-2 6 M15 2 l-2 6 M24 4 l-2 6" stroke="#5aaeff" stroke-width="2.2" stroke-linecap="round"/>';
+  } else if (lvl === 'frost') g = big + jacketPath('#3a6fd8', { zip: true, puffy: true }) + '</g>' + beanie('#e63946') + mitten('#e63946');
+  else if (lvl === 'cold') g = big + jacketPath('#f08a24', { zip: true, puffy: true }) + '</g>' + beanie('#1fa39a');
+  else if (lvl === 'cool') g = '<g transform="translate(0,2) scale(.95)">' + jacketPath('#4cae6a', { zip: true }) + '</g>';
+  else if (lvl === 'mild') g = '<g transform="translate(0,2) scale(.95)">' + jacketPath('#8e6bd1', { rib: true }) + '</g>';
+  else g = '<circle cx="22" cy="22" r="10" fill="#ffd166"/><path d="M22 4 v5 M22 35 v5 M4 22 h5 M35 22 h5 M9 9 l3.5 3.5 M31.5 31.5 l3.5 3.5 M35 9 l-3.5 3.5 M9 35 l3.5 -3.5" stroke="#ffd166" stroke-width="2.6" stroke-linecap="round"/>' +
+    '<path d="M26 52 Q26 36 42 36 Q58 36 58 52Z" fill="#2fb8ff"/><rect x="42" y="48" width="22" height="6" rx="3" fill="#1b8fd1"/>';
+  return '<svg viewBox="0 0 64 64">' + g + '</svg>';
+}
+function outerText(a) {
+  var lvl = outerLevel(a), t;
+  if (a.wet && a.snow) t = 'Vinterjakke, lue og votter';
+  else if (a.wet) t = 'Regnjakke og gummistøvler';
+  else if (lvl === 'frost') t = 'Dunjakke, lue og votter';
+  else if (lvl === 'cold') t = 'Jakke og lue';
+  else if (lvl === 'cool') t = 'Lett jakke';
+  else if (lvl === 'mild') t = 'Tynn jakke eller genser';
+  else t = 'Ingen jakke trengs i dag';
+  if (a.wind >= 10) t += ' – det blåser';
+  return t;
+}
+
+function iconSvg2(name) {
+  var g = '';
+  if (name === 'shirt') g = '<path d="M12 12 L2 22 L9 29 L15 24 V46 H37 V24 L43 29 L50 22 L40 12 Q26 20 12 12Z" fill="#4fa3ff"/><path d="M20 13 Q26 21 32 13" stroke="#2f7fd6" stroke-width="3" fill="none"/>' +
+    '<path d="M34 36 H60 L62 62 H51 L47 49 L43 62 H32Z" fill="#3f5a8a"/><path d="M34 36 H60" stroke="#2c4166" stroke-width="3"/>';
+  else if (name === 'bowl') g = '<ellipse cx="32" cy="55" rx="22" ry="4" fill="rgba(0,0,0,.2)"/><path d="M6 32 H58 Q57 54 32 54 Q7 54 6 32Z" fill="#f4f6f8"/><path d="M6 32 H58" stroke="#cfd6de" stroke-width="2"/>' +
+    '<ellipse cx="32" cy="32" rx="26" ry="6.5" fill="#ffd58a"/><circle cx="20" cy="31" r="2.6" fill="#c98a3b"/><circle cx="30" cy="29" r="2.6" fill="#c98a3b"/><circle cx="41" cy="32" r="2.6" fill="#c98a3b"/><circle cx="48" cy="29.5" r="2.4" fill="#c98a3b"/>' +
+    '<path d="M22 20 q-4 -5 0 -10 M32 18 q-4 -5 0 -10 M42 20 q-4 -5 0 -10" stroke="#9bb0c5" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+  else if (name === 'teeth') g = '<path d="M6 12 Q6 4 15 4 Q20 6 24 4 Q33 4 33 12 Q33 21 30 29 Q28 34 26 27 Q24 21 20 21 Q16 21 14 27 Q12 34 10 29 Q6 21 6 12Z" fill="#fff" stroke="#cfd6de" stroke-width="1.5"/>' +
+    '<path d="M44 6 l2.2 5.4 5.4 2.2 -5.4 2.2 -2.2 5.4 -2.2 -5.4 -5.4 -2.2 5.4 -2.2z" fill="#ffd166"/>' +
+    '<g transform="rotate(-28 34 46)"><rect x="6" y="42" width="38" height="8" rx="4" fill="#4fa3ff"/><rect x="42" y="38" width="16" height="12" rx="3" fill="#e8eef4"/><ellipse cx="50" cy="37" rx="8" ry="3.4" fill="#5fe39a"/><path d="M44 50 v5 M48 50 v5 M52 50 v5 M56 50 v5" stroke="#9bb0c5" stroke-width="1.6"/></g>';
+  else if (name === 'bag') g = '<path d="M20 20 Q8 34 12 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M44 20 Q56 34 52 54" stroke="#c85a14" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+    '<path d="M25 14 Q25 4 32 4 Q39 4 39 14" fill="none" stroke="#c85a14" stroke-width="3.4"/><rect x="14" y="12" width="36" height="46" rx="13" fill="#ff8a3d"/>' +
+    '<rect x="20" y="20" width="24" height="10" rx="5" fill="#f26a14"/><circle cx="32" cy="25" r="2.4" fill="#ffd166"/><rect x="20" y="36" width="24" height="16" rx="6" fill="#f26a14"/><path d="M20 37 H44" stroke="#ffe0c2" stroke-width="2"/>';
+  return '<svg viewBox="0 0 64 64">' + g + '</svg>';
+}
+
+var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7" stroke="#0b121a" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var lastAdvice = { minT: 10, wet: false, snow: false, wind: 0, sunny: false };
+var routine = null, RKEY = 'gangskjerm-rutine-v1', mem = null;
+var DAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
+var MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember'];
+function todayKey() { var o = osl(new Date()); return o.getFullYear() + '-' + pad(o.getMonth() + 1) + '-' + pad(o.getDate()); }
+function loadRoutine() {
+  var raw = null;
+  try { raw = window.localStorage.getItem(RKEY); } catch (e) { raw = mem; }
+  var r = null; try { r = raw ? JSON.parse(raw) : null; } catch (e2) { r = null; }
+  routine = (r && r.d === todayKey() && r.c) ? r : { d: todayKey(), c: {} };
+}
+function saveRoutine() {
+  var raw = JSON.stringify(routine); mem = raw;
+  try { window.localStorage.setItem(RKEY, raw); } catch (e) { }
+}
+function buildRoutine() {
+  var html = '', i, j;
+  for (i = 0; i < KIDS.length; i++) {
+    var k = KIDS[i];
+    html += '<div class="col" id="col-' + k.id + '" style="border-top-color:' + k.color + '"><h3>' + avatarSvg(k) + k.name + '<span class="ok">⭐ Ferdig!</span></h3><div class="tasks">';
+    for (j = 0; j < TASKS.length; j++) {
+      var t = TASKS[j];
+      html += '<div class="task" data-k="' + k.id + '" data-t="' + t.id + '"><div class="circle">' + CHECK + '</div>' +
+        '<div class="pic"' + (t.dyn ? ' data-dyn="1"' : '') + '>' + (t.dyn ? outerSvg(lastAdvice) : iconSvg2(t.icon)) + '</div>' +
+        '<div class="txt">' + t.text + (t.dyn ? '<small data-dyn="1">' + outerText(lastAdvice) + '</small>' : '') + '</div></div>';
+    }
+    html += '</div></div>';
+  }
+  $('cols').innerHTML = html;
+  var els = $('cols').querySelectorAll('.task'), n;
+  for (n = 0; n < els.length; n++) els[n].addEventListener('click', onTask, false);
+  refreshRoutine();
+}
+function onTask(e) {
+  if (window.__swiped && Date.now() - window.__swiped < 400) return;   // ikke avkrysning etter sveip
+  lastAct = Date.now();
+  var el = e.currentTarget, key = el.getAttribute('data-k') + '-' + el.getAttribute('data-t');
+  if (routine.c[key]) delete routine.c[key]; else routine.c[key] = 1;
+  saveRoutine(); refreshRoutine();
+}
+function refreshRoutine() {
+  var els = $('cols').querySelectorAll('.task'), n, k, i;
+  for (n = 0; n < els.length; n++) {
+    var key = els[n].getAttribute('data-k') + '-' + els[n].getAttribute('data-t');
+    els[n].className = 'task' + (routine.c[key] ? ' on' : '');
+  }
+  for (i = 0; i < KIDS.length; i++) {
+    var all = true, j;
+    for (j = 0; j < TASKS.length; j++) if (!routine.c[KIDS[i].id + '-' + TASKS[j].id]) all = false;
+    $('col-' + KIDS[i].id).className = 'col' + (all ? ' done' : '');
+  }
+}
+function updateOuterwear(a) {
+  if (a) lastAdvice = a;
+  var pics = document.querySelectorAll('[data-dyn]'), n;
+  for (n = 0; n < pics.length; n++) pics[n].innerHTML = pics[n].tagName === 'SMALL' ? outerText(lastAdvice) : outerSvg(lastAdvice);
+}
+// Nullstill automatisk når datoen (norsk tid) skifter
+function checkReset() {
+  if (!routine) return;
+  var o = osl(new Date());
+  $('rdate').textContent = DAYS[o.getDay()] + ' ' + o.getDate() + '. ' + MONTHS[o.getMonth()];
+  if (routine.d !== todayKey()) { routine = { d: todayKey(), c: {} }; saveRoutine(); refreshRoutine(); }
+}
+loadRoutine(); buildRoutine(); checkReset();
+if (/[?&]page=2/.test(location.search)) go(1, true);
 
 tick(); setInterval(tick, 10000);
 if (DEMO) {
