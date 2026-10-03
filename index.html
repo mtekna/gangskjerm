@@ -27,26 +27,27 @@
   .lower { display: flex; flex: none; height: 33vh; margin-top: 1.6vh; }
   .transit { flex: none; width: 44vw; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; margin-left: 1.6vw; }
 
-  /* ---------- Topp ---------- */
-  .top { display: flex; justify-content: space-between; align-items: center; height: 12vh; color: var(--muted); font-size: 2.8vh; }
-  .top .place { flex: none; }
-  .top .warn { color: var(--warn); font-size: 2.4vh; text-align: center; -webkit-box-flex: 1; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .clock { flex: none; text-align: right; font-size: 13vh; line-height: 1; color: var(--text); font-weight: 700; letter-spacing: -.01em; }
-  .flagday { flex: none; display: flex; align-items: center; margin: 0 2vw; }
-  .flagday svg { width: 11vh; height: 8vh; display: block; margin-right: 1.2vw; flex: none; }
-  .flagday b { display: block; color: var(--text); font-size: 4vh; font-weight: 700; line-height: 1.1; }
-  .flagday span { display: block; color: var(--muted); font-size: 2.6vh; line-height: 1.3; }
-
-  /* ---------- Været nå ---------- */
-  .now { display: flex; align-items: center; height: 29vh; margin-top: .6vh; }
-  .now .icon { width: 24vh; height: 24vh; margin-right: 1.4vw; flex: none; }
+  /* ---------- Topp: vær | barn | klokke ---------- */
+  .head { display: flex; flex: none; height: 42vh; }
+  .hl { -webkit-box-flex: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .mini { display: flex; align-items: center; height: 4vh; color: var(--muted); font-size: 2.6vh; white-space: nowrap; }
+  .mini .place { flex: none; margin-right: 1.6vw; }
+  .mini .warn { color: var(--warn); font-size: 2.4vh; overflow: hidden; text-overflow: ellipsis; }
+  .now { display: flex; align-items: center; -webkit-box-flex: 1; flex: 1; min-height: 0; }
+  .now .icon { width: 19vh; height: 19vh; margin-right: 1vw; flex: none; }
   .now .icon svg { width: 100%; height: 100%; display: block; }
-  .now .temp { font-size: 25vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
-  .now .temp small { font-size: 10vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1.5vh; }
-  .now .meta { margin-left: 2vw; font-size: 3.6vh; color: var(--muted); line-height: 1.45; min-width: 0; }
-  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 4.6vh; }
-  .now .kid { margin-left: auto; flex: none; width: 19.7vh; height: 28.8vh; }
-  .now .kid svg { width: 100%; height: 100%; display: block; }
+  .now .temp { font-size: 22vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
+  .now .temp small { font-size: 8vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1.2vh; }
+  .now .meta { margin-left: 1.4vw; font-size: 3.2vh; color: var(--muted); line-height: 1.45; min-width: 0; }
+  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 4vh; }
+  .kid { flex: none; width: 28.8vh; height: 100%; margin: 0 1.2vw; }
+  .kid svg { width: 100%; height: 100%; display: block; }
+  .hr { flex: none; display: flex; flex-direction: column; align-items: flex-end; min-width: 0; }
+  .clock { text-align: right; font-size: 11.5vh; line-height: 1; color: var(--text); font-weight: 700; letter-spacing: -.01em; }
+  .flagday { display: flex; align-items: center; margin-top: 2vh; max-width: 36vh; }
+  .flagday svg { width: 10vh; height: 7.3vh; display: block; margin-right: .9vw; flex: none; }
+  .flagday b { display: block; color: var(--text); font-size: 3.6vh; font-weight: 700; line-height: 1.1; }
+  .flagday span { display: block; color: var(--muted); font-size: 2.4vh; line-height: 1.25; }
 
   /* ---------- Handling ---------- */
   .advice { margin: 1.4vh 0 0; padding: 1.6vh 1.6vw; border-radius: 1.6vh; background: var(--card); -webkit-box-flex: 1; flex: 1; min-height: 0;
@@ -115,12 +116,17 @@
 <body>
 <div class="screen">
   <section class="upper">
-    <div class="top"><div class="place" id="place">Hjemme</div><div class="flagday" id="flagday"></div><div class="warn" id="stale"></div><div class="clock" id="clock">--:--</div></div>
-    <div class="now">
-      <div class="icon" id="nowIcon"></div>
-      <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
-      <div class="meta" id="nowMeta"></div>
+    <div class="head">
+      <div class="hl">
+        <div class="mini"><div class="place" id="place">Hjemme</div><div class="warn" id="stale"></div></div>
+        <div class="now">
+          <div class="icon" id="nowIcon"></div>
+          <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
+          <div class="meta" id="nowMeta"></div>
+        </div>
+      </div>
       <div class="kid" id="kid"></div>
+      <div class="hr"><div class="clock" id="clock">--:--</div><div class="flagday" id="flagday"></div></div>
     </div>
     <div class="advice" id="advice"><div class="a1">Henter vær …</div><div class="a2"></div></div>
   </section>
@@ -153,8 +159,18 @@ var CFG = {
 var DEMO = (function () { var m = /[?&]demo=([^&]*)/.exec(location.search); return m ? (m[1] === '1' ? 'rain' : m[1]) : ''; })();
 
 function $(id) { return document.getElementById(id); }
+// ===== Norsk tid, uavhengig av tidssonen på nettbrettet =====
+var OSLO_FMT = null;
+try { OSLO_FMT = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Oslo', hour12: false, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }); } catch (e) { OSLO_FMT = null; }
+// Gir en Date der getHours() osv. returnerer klokkeslettet i Norge
+function osl(d) {
+  if (!OSLO_FMT || !OSLO_FMT.formatToParts) return d;
+  var parts = OSLO_FMT.formatToParts(d), v = {}, i;
+  for (i = 0; i < parts.length; i++) v[parts[i].type] = parseInt(parts[i].value, 10);
+  return new Date(v.year, v.month - 1, v.day, v.hour % 24, v.minute, v.second);
+}
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
-function hhmm(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function hhmm(d) { var o = osl(d); return pad(o.getHours()) + ':' + pad(o.getMinutes()); }
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 var fails = { weather: 0, transit: 0 };
 var lastOk = { weather: 0, transit: 0 };
@@ -198,8 +214,8 @@ function renderFlag(d) {
 }
 
 function tick() {
-  var d = new Date();
-  $('clock').textContent = hhmm(d);
+  var real = new Date(), d = osl(real);
+  $('clock').textContent = hhmm(real);
   renderFlag(d);
   var h = d.getHours();
   var dim = DEMO === 'night' || (h >= CFG.dimFrom || h < CFG.dimTo);
@@ -300,7 +316,7 @@ function makeAdvice(ts, until, now, d, code) {
   if (first) {
     var startsNow = new Date(first.time).getTime() - now.getTime() < 3600e3;
     kind = 'rain';
-    var fromH = 'kl. ' + pad(new Date(first.time).getHours());
+    var fromH = 'kl. ' + pad(osl(new Date(first.time)).getHours());
     a1 = rainIcon + (noun === 'snø' ? (startsNow ? 'Det snør nå' : 'Snø fra ' + fromH) : 'Ta med paraply – ' + (startsNow ? noun + ' nå' : noun + ' fra ' + fromH));
   } else if (/fog/.test(parseCode(code).k)) {
     a1 = '<span class="ic">' + iconSvg('fog') + '</span>Tåke – ta det med ro ute';
@@ -382,7 +398,8 @@ function renderWeather() {
   $('nowMeta').innerHTML = '<b>' + label(code) + '</b>Vind ' + Math.round(d.wind_speed) + ' m/s<br>Fuktighet ' + Math.round(d.relative_humidity) + ' %';
 
   // Resten av dagen: til midnatt, men minst 8 timer fremover
-  var midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+  var oNow = osl(now), oMid = new Date(oNow); oMid.setHours(24, 0, 0, 0);
+  var midnight = new Date(now.getTime() + (oMid.getTime() - oNow.getTime()));
   var list = ts.filter(function (x) { return x.data.next_1_hours; });
   var until = list.filter(function (x) { return new Date(x.time) < midnight; });
   if (until.length < 8) until = list.slice(0, 8);
@@ -400,7 +417,7 @@ function renderWeather() {
     var wd = x.data.instant.details, ws = wd.wind_speed || 0, dir = (wd.wind_from_direction || 0) + 180;
     var rv = p < 0.1 ? '0' : (p < 10 ? p.toFixed(1).replace('.', ',') : '' + Math.round(p));
     var wcls = ws >= 14 ? ' stormy' : (ws >= 8 ? ' breezy' : '');
-    html += '<div class="hour' + (p >= 0.2 ? ' wet' : '') + '"><div class="h">' + (idx === 0 ? 'nå' : pad(dt.getHours())) + '</div><div class="i">' + iconSvg(n1.summary.symbol_code) +
+    html += '<div class="hour' + (p >= 0.2 ? ' wet' : '') + '"><div class="h">' + (idx === 0 ? 'nå' : pad(osl(dt).getHours())) + '</div><div class="i">' + iconSvg(n1.summary.symbol_code) +
       '</div><div class="t">' + Math.round(wd.air_temperature) + '°</div>' +
       '<div class="blk rain' + (p < 0.1 ? ' zero' : (p >= 0.2 ? ' wetb' : '')) + '"><div class="v">' + rv + '</div><div class="u">mm</div></div>' +
       '<div class="blk wind' + wcls + '"><svg viewBox="0 0 24 24" style="-webkit-transform:rotate(' + Math.round(dir) + 'deg);transform:rotate(' + Math.round(dir) + 'deg)"><path d="M12 2 L19 20 L12 16 L5 20 Z" fill="currentColor"/></svg>' +
@@ -500,7 +517,7 @@ function demoWeather(kind) {
   var tm = /[?&]temp=(-?\d+)/.exec(location.search); if (tm) temp = parseInt(tm[1], 10);
   for (i = 0; i < 30; i++) {
     t = new Date(now.getTime() + (i - 0) * 3600e3); t.setMinutes(0, 0, 0);
-    var sym = 'partlycloudy_day', pr = 0, h = t.getHours();
+    var sym = 'partlycloudy_day', pr = 0, h = osl(t).getHours();
     if (kind === 'rain' || kind === 'cancel') { sym = i < 3 ? 'cloudy' : (i < 6 ? 'lightrain' : (i < 9 ? 'rain' : (i === 9 ? 'heavyrain' : 'cloudy'))); pr = i < 3 ? 0 : (i < 6 ? .6 : (i < 9 ? 1.6 : (i === 9 ? 3.4 : 0.1))); }
     else if (kind === 'fog') { sym = 'fog'; }
     else if (kind === 'snow') { sym = i < 3 ? 'lightsnow' : 'snow'; pr = i < 3 ? .5 : 2; }
@@ -536,7 +553,7 @@ if (DEMO) {
   loadWeather(); setInterval(loadWeather, 10 * 60e3);
   loadTransit(); setInterval(loadTransit, 30e3);
   // Full omlasting hver natt, så en evig kjørende side holder seg frisk
-  setInterval(function () { var d = new Date(); if (d.getHours() === 4 && d.getMinutes() === 0) location.reload(); }, 60e3);
+  setInterval(function () { var d = osl(new Date()); if (d.getHours() === 4 && d.getMinutes() === 0) location.reload(); }, 60e3);
 }
 </script>
 </body>
