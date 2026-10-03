@@ -22,36 +22,41 @@
     font-family: Roboto, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif; cursor: none;
     font-variant-numeric: tabular-nums; }
   body.dim svg { opacity: .6; }
-  .screen { display: -webkit-box; display: flex; height: 100vh; padding: 2.2vh 2vw; }
-  .weather { -webkit-box-flex: 1.15; flex: 1.15; display: flex; flex-direction: column; min-width: 0; margin-right: 2vw; }
-  .transit { -webkit-box-flex: 1; flex: 1; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; }
+  .screen { display: flex; flex-direction: column; height: 100vh; padding: 2.2vh 2vw; }
+  .upper { -webkit-box-flex: 1; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .lower { display: flex; flex: none; height: 33vh; margin-top: 1.6vh; }
+  .transit { flex: none; width: 44vw; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; margin-left: 1.6vw; }
 
   /* ---------- Topp ---------- */
-  .top { display: flex; justify-content: space-between; align-items: center; height: 6vh; color: var(--muted); font-size: 2.6vh; }
-  .top .place { width: 9vw; }
+  .top { display: flex; justify-content: space-between; align-items: center; height: 12vh; color: var(--muted); font-size: 2.8vh; }
+  .top .place { flex: none; }
   .top .warn { color: var(--warn); font-size: 2.4vh; text-align: center; -webkit-box-flex: 1; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .clock { width: 12vw; text-align: right; font-size: 6vh; line-height: 1; color: var(--text); font-weight: 600; letter-spacing: .02em; }
+  .clock { flex: none; text-align: right; font-size: 13vh; line-height: 1; color: var(--text); font-weight: 700; letter-spacing: -.01em; }
+  .flagday { flex: none; display: flex; align-items: center; margin: 0 2vw; }
+  .flagday svg { width: 11vh; height: 8vh; display: block; margin-right: 1.2vw; flex: none; }
+  .flagday b { display: block; color: var(--text); font-size: 4vh; font-weight: 700; line-height: 1.1; }
+  .flagday span { display: block; color: var(--muted); font-size: 2.6vh; line-height: 1.3; }
 
   /* ---------- Været nå ---------- */
-  .now { display: flex; align-items: center; height: 21vh; margin-top: 1vh; }
-  .now .icon { width: 15vh; height: 15vh; margin-right: 1vw; flex: none; }
+  .now { display: flex; align-items: center; height: 29vh; margin-top: .6vh; }
+  .now .icon { width: 24vh; height: 24vh; margin-right: 1.4vw; flex: none; }
   .now .icon svg { width: 100%; height: 100%; display: block; }
-  .now .temp { font-size: 17vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
-  .now .temp small { font-size: 7vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1vh; }
-  .now .meta { margin-left: 1.4vw; font-size: 2.8vh; color: var(--muted); line-height: 1.45; min-width: 0; }
-  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 3.4vh; }
-  .now .kid { margin-left: auto; flex: none; width: 14.4vh; height: 21vh; }
+  .now .temp { font-size: 25vh; font-weight: 700; line-height: 1; white-space: nowrap; letter-spacing: -.02em; }
+  .now .temp small { font-size: 10vh; color: var(--muted); font-weight: 400; vertical-align: top; position: relative; top: 1.5vh; }
+  .now .meta { margin-left: 2vw; font-size: 3.6vh; color: var(--muted); line-height: 1.45; min-width: 0; }
+  .now .meta b { display: block; color: var(--text); font-weight: 600; font-size: 4.6vh; }
+  .now .kid { margin-left: auto; flex: none; width: 19.7vh; height: 28.8vh; }
   .now .kid svg { width: 100%; height: 100%; display: block; }
 
   /* ---------- Handling ---------- */
-  .advice { margin: 1.6vh 0; padding: 1.6vh 1.6vw; border-radius: 1.6vh; background: var(--card); height: 15vh;
+  .advice { margin: 1.4vh 0 0; padding: 1.6vh 1.6vw; border-radius: 1.6vh; background: var(--card); -webkit-box-flex: 1; flex: 1; min-height: 0;
     border-left: 1vh solid var(--faint); display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
   .advice.rain { border-left-color: var(--rain); }
   .advice.cold { border-left-color: #9ad0ff; }
   .advice.ok { border-left-color: var(--good); }
-  .advice .a1 { font-size: 4.8vh; font-weight: 700; line-height: 1.12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .advice .a2 { font-size: 3.2vh; color: var(--muted); margin-top: .8vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .advice .a1 .ic { display: inline-block; width: 5.4vh; height: 5.4vh; vertical-align: -1vh; margin-right: .8vw; }
+  .advice .a1 { font-size: 6vh; font-weight: 700; line-height: 1.12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .advice .a2 { font-size: 3.8vh; color: var(--muted); margin-top: .8vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .advice .a1 .ic { display: inline-block; width: 6.6vh; height: 6.6vh; vertical-align: -1.2vh; margin-right: .8vw; }
 
   /* ---------- Timestripe ---------- */
   .hours { -webkit-box-flex: 1; flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-gap: .6vw; min-height: 0; }
@@ -79,38 +84,38 @@
 
   /* ---------- Avganger ---------- */
   .board { background: var(--card); border-radius: 1.6vh; padding: 1.2vh 1.4vw 1vh; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-  .board h2 { display: flex; align-items: center; font-size: 4.6vh; font-weight: 700; height: 6.4vh; flex: none; }
-  .badge { display: inline-block; min-width: 5vh; text-align: center; padding: .3vh 1vh; border-radius: .9vh; color: var(--ink); font-weight: 800; font-size: 4.2vh; margin-right: .9vw; }
+  .board h2 { display: flex; align-items: center; font-size: 3.2vh; font-weight: 700; height: 4.6vh; flex: none; }
+  .badge { display: inline-block; min-width: 5vh; text-align: center; padding: .3vh 1vh; border-radius: .9vh; color: var(--ink); font-weight: 800; font-size: 3vh; margin-right: .9vw; }
   body.dim .badge { color: #05080c; }
   .badge.metro { background: var(--metro); } .badge.bus { background: var(--bus); }
-  .board h2 .sub { color: var(--muted); font-weight: 400; font-size: 3vh; margin-left: .8vw; white-space: nowrap; }
-  .board h2 .walk { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 3vh; white-space: nowrap; }
-  .rows { -webkit-box-flex: 1; flex: 1; display: grid; grid-template-rows: repeat(5, minmax(0, 1fr)); grid-gap: 1vh; margin-top: 1.4vh; min-height: 0; }
+  .board h2 .sub { color: var(--muted); font-weight: 400; font-size: 2.4vh; margin-left: .8vw; white-space: nowrap; }
+  .board h2 .walk { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 2.4vh; white-space: nowrap; }
+  .rows { -webkit-box-flex: 1; flex: 1; display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); grid-gap: .5vh; margin-top: 1vh; min-height: 0; }
   .row { display: flex; align-items: center; padding: 0 .9vw; border-radius: 1vh; border-left: .8vh solid transparent; min-height: 0; overflow: hidden; }
-  .row .when { width: 28vh; font-size: 7vh; font-weight: 700; white-space: nowrap; line-height: 1; }
-  .row .det { -webkit-box-flex: 1; flex: 1; min-width: 0; font-size: 3.4vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+  .row .when { width: 20vh; font-size: 4.6vh; font-weight: 700; white-space: nowrap; line-height: 1; }
+  .row .det { -webkit-box-flex: 1; flex: 1; min-width: 0; font-size: 2.5vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
   .row .det .rt { color: var(--good); }
-  .row .go { font-size: 4.4vh; font-weight: 800; white-space: nowrap; text-align: right; margin-left: 1vw; }
+  .row .go { font-size: 3.2vh; font-weight: 800; white-space: nowrap; text-align: right; margin-left: 1vw; }
   .row.target { background: rgba(95,227,154,.14); border-left-color: var(--good); }
-  .row.target .when { font-size: 8.4vh; color: var(--good); }
+  .row.target .when { font-size: 5.6vh; color: var(--good); }
   .row.target .det { color: var(--text); }
   .row.target.gonow { background: rgba(255,209,102,.18); border-left-color: var(--accent); }
   .row.target.gonow .when, .row.target.gonow .go { color: var(--accent); }
   .row.target .go { color: var(--good); }
-  .row .go small { display: block; font-size: 2.8vh; font-weight: 400; color: var(--muted); line-height: 1.3; }
+  .row .go small { display: block; font-size: 2.3vh; font-weight: 400; color: var(--muted); line-height: 1.3; }
   .row.missed { opacity: .38; }
-  .row.missed .go { font-weight: 500; font-size: 3vh; }
+  .row.missed .go { font-weight: 500; font-size: 2.3vh; }
   .row.cancel .when { text-decoration: line-through; color: var(--warn); }
-  .row.cancel .go { color: var(--warn); font-size: 3.4vh; }
+  .row.cancel .go { color: var(--warn); font-size: 2.6vh; }
   .row.cancel { opacity: .85; }
-  .row.empty .det { font-size: 3.6vh; }
+  .row.empty .det { font-size: 2.8vh; }
   .board.old .rows { opacity: .35; }
 </style>
 </head>
 <body>
 <div class="screen">
-  <section class="weather">
-    <div class="top"><div class="place" id="place">Hjemme</div><div class="warn" id="stale"></div><div class="clock" id="clock">--:--</div></div>
+  <section class="upper">
+    <div class="top"><div class="place" id="place">Hjemme</div><div class="flagday" id="flagday"></div><div class="warn" id="stale"></div><div class="clock" id="clock">--:--</div></div>
     <div class="now">
       <div class="icon" id="nowIcon"></div>
       <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
@@ -118,11 +123,13 @@
       <div class="kid" id="kid"></div>
     </div>
     <div class="advice" id="advice"><div class="a1">Henter vær …</div><div class="a2"></div></div>
-    <div class="hours" id="hours"></div>
   </section>
 
-  <section class="transit">
-    <div class="board" id="b-hauger"><h2><span class="badge metro">3</span>Hauger<span class="sub">mot sentrum</span><span class="walk"></span></h2><div class="rows"></div></div>
+  <section class="lower">
+    <div class="hours" id="hours"></div>
+    <div class="transit">
+      <div class="board" id="b-hauger"><h2><span class="badge metro">3</span>Hauger<span class="sub">mot sentrum</span><span class="walk"></span></h2><div class="rows"></div></div>
+    </div>
   </section>
 </div>
 
@@ -134,9 +141,9 @@ var CFG = {
   lat: 59.92, lon: 10.51,                     // Bærum (avrundet)
   clientName: 'privat-gangskjerm',            // Entur ber om et navn på klienten
   boards: [
-    { el: 'b-hauger',   stop: 'NSR:StopPlace:58283', quay: 'NSR:Quay:7305', n: 6, walk: 8 }                     // Hauger, T3 mot Oslo
+    { el: 'b-hauger',   stop: 'NSR:StopPlace:58283', quay: 'NSR:Quay:7305', n: 4, walk: 8 }                     // Hauger, T3 mot Oslo
   ],
-  rows: 5,                                    // antall avgangsrader (må matche grid i .rows)
+  rows: 3,                                    // antall avgangsrader (må matche grid i .rows)
   hoursShown: 10,                             // maks antall timer i timestripen
   dimFrom: 22, dimTo: 6,                      // dimmet visning om natten
   staleAfterMin: 4                            // avganger eldre enn dette markeres som utdatert
@@ -153,9 +160,47 @@ var fails = { weather: 0, transit: 0 };
 var lastOk = { weather: 0, transit: 0 };
 
 // ===== Klokke + dimming =====
+// ===== Flaggdager (offisielle, jf. forskrift om flagging) =====
+var FLAGTEST = (function () { var m = /[?&]flag=(\d{4}-\d{2}-\d{2})/.exec(location.search); return m ? m[1] : ''; })();
+var FIXED_FLAG = { '1-1': 'Nyttårsdag', '1-21': 'Prinsesse Ingrid Alexandras fødselsdag', '2-6': 'Samefolkets dag',
+  '2-21': 'Kong Haralds fødselsdag', '5-1': 'Offentlig høytidsdag', '5-8': 'Frigjøringsdagen', '5-17': 'Grunnlovsdagen',
+  '6-7': 'Unionsoppløsningen 1905', '7-4': 'Dronning Sonjas fødselsdag', '7-20': 'Kronprins Haakons fødselsdag',
+  '7-29': 'Olsok', '8-19': 'Kronprinsesse Mette-Marits fødselsdag', '12-25': '1. juledag' };
+function easterSunday(y) {
+  var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+    g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+    l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+    mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(y, mo - 1, da);
+}
+function sameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function flagDayName(d) {
+  var y = d.getFullYear(), n = FIXED_FLAG[(d.getMonth() + 1) + '-' + d.getDate()];
+  if (n) return n;
+  var e = easterSunday(y);
+  if (sameDay(d, e)) return '1. påskedag';
+  if (sameDay(d, new Date(y, e.getMonth(), e.getDate() + 49))) return '1. pinsedag';
+  // Stortingsvalg: andre mandag i september, hvert fjerde år (2025, 2029, ...)
+  if (y >= 2025 && (y - 2025) % 4 === 0 && d.getMonth() === 8) {
+    var first = 1 + ((8 - new Date(y, 8, 1).getDay()) % 7);
+    if (d.getDate() === first + 7) return 'Stortingsvalget';
+  }
+  return '';
+}
+var flagShown = null;
+function renderFlag(d) {
+  var test = FLAGTEST ? new Date(FLAGTEST + 'T12:00:00') : d, name = flagDayName(test);
+  if (name === flagShown) return;
+  flagShown = name;
+  var mo = test.getMonth(), hoist = (mo >= 2 && mo <= 9) ? '08' : '09';
+  $('flagday').innerHTML = name ? '<svg viewBox="0 0 22 16"><rect width="22" height="16" rx="1" fill="#ba0c2f"/><rect x="6" width="4" height="16" fill="#fff"/><rect y="6" width="22" height="4" fill="#fff"/><rect x="7" width="2" height="16" fill="#00205b"/><rect y="7" width="22" height="2" fill="#00205b"/></svg>' +
+    '<div><b>Flaggdag</b><span>' + name + ' · heis kl. ' + hoist + '</span></div>' : '';
+}
+
 function tick() {
   var d = new Date();
   $('clock').textContent = hhmm(d);
+  renderFlag(d);
   var h = d.getHours();
   var dim = DEMO === 'night' || (h >= CFG.dimFrom || h < CFG.dimTo);
   document.body.className = dim ? 'dim' : '';
