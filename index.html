@@ -30,8 +30,9 @@
   /* ---------- Topp: vær | barn | klokke ---------- */
   .head { display: flex; flex: none; height: 42vh; }
   .hl { -webkit-box-flex: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .mini { display: flex; align-items: center; height: 4vh; color: var(--muted); font-size: 2.6vh; white-space: nowrap; }
-  .mini .place { flex: none; margin-right: 1.6vw; }
+  .mini { display: flex; align-items: center; height: 6.4vh; color: var(--muted); font-size: 2.6vh; white-space: nowrap; }
+  .mini .place { flex: none; margin-right: 1.6vw; color: var(--text); font-size: 5vh; font-weight: 700; line-height: 1; }
+  .mini .place span { color: var(--muted); font-weight: 400; margin-left: .8vw; }
   .mini .warn { color: var(--warn); font-size: 2.4vh; overflow: hidden; text-overflow: ellipsis; }
   .now { display: flex; align-items: center; -webkit-box-flex: 1; flex: 1; min-height: 0; }
   .now .icon { width: 19vh; height: 19vh; margin-right: 1vw; flex: none; }
@@ -60,9 +61,13 @@
   .advice .a1 .ic { display: inline-block; width: 6.6vh; height: 6.6vh; vertical-align: -1.2vh; margin-right: .8vw; }
 
   /* ---------- Timestripe ---------- */
-  .hours { -webkit-box-flex: 1; flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-gap: .6vw; min-height: 0; }
-  .hour { background: var(--card); border-radius: 1.2vh; display: flex; flex-direction: column;
+  .hours { -webkit-box-flex: 1; flex: 1; display: flex; min-width: 0; min-height: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .hours::-webkit-scrollbar { display: none; }
+  .hour { flex: none; width: 5.3vw; margin-right: .6vw; background: var(--card); border-radius: 1.2vh; display: flex; flex-direction: column;
     align-items: center; padding: 1vh .1vw 1vh; min-width: 0; }
+  .hour:last-child { margin-right: 0; }
+  .hour.newday { margin-left: 1vw; }
+  .hour .h.day { color: var(--accent); font-weight: 700; }
   .hour.wet { background: var(--card2); }
   .hour .h { font-size: 2.6vh; color: var(--muted); height: 3.2vh; }
   .hour .i { width: 5.6vh; height: 5.6vh; margin: .4vh 0; }
@@ -81,7 +86,7 @@
   .hour .wind.breezy .v, .hour .wind.breezy svg { color: var(--accent); }
   .hour .wind.stormy .v, .hour .wind.stormy svg { color: var(--warn); }
   .hour .wind svg { color: var(--muted); }
-  .hours .none { grid-column: 1 / -1; color: var(--muted); font-size: 3vh; padding: 3vh 1vw; background: var(--card); border-radius: 1.2vh; }
+  .hours .none { flex: 1; color: var(--muted); font-size: 3vh; padding: 3vh 1vw; background: var(--card); border-radius: 1.2vh; }
 
   /* ---------- Avganger ---------- */
   .board { background: var(--card); border-radius: 1.6vh; padding: 1.2vh 1.4vw 1vh; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -158,7 +163,7 @@
   <section class="upper">
     <div class="head">
       <div class="hl">
-        <div class="mini"><div class="place" id="place">Hjemme</div><div class="warn" id="stale"></div></div>
+        <div class="mini"><div class="place" id="place"></div><div class="warn" id="stale"></div></div>
         <div class="now">
           <div class="icon" id="nowIcon"></div>
           <div class="temp"><span id="nowTemp">--</span><small>°</small></div>
@@ -200,7 +205,8 @@ var CFG = {
     { el: 'b-hauger',   stop: 'NSR:StopPlace:58283', quay: 'NSR:Quay:7305', n: 4, walk: 8 }                     // Hauger, T3 mot Oslo
   ],
   rows: 3,                                    // antall avgangsrader (må matche grid i .rows)
-  hoursShown: 10,                             // maks antall timer i timestripen
+  hoursShown: 10,                             // timer som brukes til klesrådet
+  hoursAhead: 48,                             // timer i værstripen (kan scrolles)
   dimFrom: 22, dimTo: 6,                      // dimmet visning om natten
   staleAfterMin: 4                            // avganger eldre enn dette markeres som utdatert
 };
@@ -267,6 +273,8 @@ function tick() {
   var real = new Date(), d = osl(real);
   $('clock').textContent = hhmm(real);
   $('rclock').textContent = hhmm(real);
+  var ds = DAYS[d.getDay()];
+  $('place').innerHTML = ds.charAt(0).toUpperCase() + ds.slice(1) + '<span>' + d.getDate() + '. ' + MONTHS[d.getMonth()] + '</span>';
   checkReset();
   renderFlag(d);
   var h = d.getHours();
@@ -464,19 +472,21 @@ function renderWeather() {
   el.className = 'advice ' + adv.kind;
   el.innerHTML = '<div class="a1">' + adv.a1 + '</div><div class="a2">' + adv.a2 + '</div>';
 
-  var html = '';
-  until.forEach(function (x, idx) {
-    var dt = new Date(x.time), n1 = x.data.next_1_hours, p = n1.details.precipitation_amount || 0;
+  var html = '', strip = list.slice(0, CFG.hoursAhead), scroll = $('hours').scrollLeft;
+  strip.forEach(function (x, idx) {
+    var dt = new Date(x.time), oh = osl(dt).getHours(), n1 = x.data.next_1_hours, p = n1.details.precipitation_amount || 0;
     var wd = x.data.instant.details, ws = wd.wind_speed || 0, dir = (wd.wind_from_direction || 0) + 180;
     var rv = p < 0.1 ? '0' : (p < 10 ? p.toFixed(1).replace('.', ',') : '' + Math.round(p));
     var wcls = ws >= 14 ? ' stormy' : (ws >= 8 ? ' breezy' : '');
-    html += '<div class="hour' + (p >= 0.2 ? ' wet' : '') + '"><div class="h">' + (idx === 0 ? 'nå' : pad(osl(dt).getHours())) + '</div><div class="i">' + iconSvg(n1.summary.symbol_code) +
+    var newDay = idx > 0 && oh === 0;
+    html += '<div class="hour' + (p >= 0.2 ? ' wet' : '') + (newDay ? ' newday' : '') + '"><div class="h' + (newDay ? ' day' : '') + '">' + (idx === 0 ? 'nå' : (newDay ? DAYS[osl(dt).getDay()].slice(0, 3) : pad(oh))) + '</div><div class="i">' + iconSvg(n1.summary.symbol_code) +
       '</div><div class="t">' + Math.round(wd.air_temperature) + '°</div>' +
       '<div class="blk rain' + (p < 0.1 ? ' zero' : (p >= 0.2 ? ' wetb' : '')) + '"><div class="v">' + rv + '</div><div class="u">mm</div></div>' +
       '<div class="blk wind' + wcls + '"><svg viewBox="0 0 24 24" style="-webkit-transform:rotate(' + Math.round(dir) + 'deg);transform:rotate(' + Math.round(dir) + 'deg)"><path d="M12 2 L19 20 L12 16 L5 20 Z" fill="currentColor"/></svg>' +
       '<div class="v">' + Math.round(ws) + '</div><div class="u">m/s</div></div></div>';
   });
   $('hours').innerHTML = html;
+  $('hours').scrollLeft = scroll;
 }
 
 // ===== Avganger (Entur) =====
@@ -609,15 +619,16 @@ function go(n, instant) {
   for (i = 0; i < d.length; i++) d[i].className = i === n ? 'on' : '';
 }
 (function () {
-  var pg = $('pager'), tr = $('track'), sx = 0, sy = 0, dx = 0, mode = '', down = false, t0 = 0;
+  var pg = $('pager'), tr = $('track'), hs = $('hours'), sx = 0, sy = 0, dx = 0, mode = '', down = false, t0 = 0, inHours = false, sl0 = 0;
   function pos(e) { var t = e.touches && e.touches.length ? e.touches[0] : (e.changedTouches && e.changedTouches.length ? e.changedTouches[0] : e); return { x: t.clientX, y: t.clientY }; }
-  function start(e) { var p = pos(e); sx = p.x; sy = p.y; dx = 0; mode = ''; down = true; t0 = Date.now(); lastAct = t0; }
+  function start(e) { var p = pos(e); sx = p.x; sy = p.y; dx = 0; mode = ''; down = true; t0 = Date.now(); lastAct = t0; inHours = page === 0 && hs.contains(e.target); sl0 = hs.scrollLeft; }
   function move(e) {
     if (!down) return;
     var p = pos(e), mx = p.x - sx, my = p.y - sy;
     if (!mode && (Math.abs(mx) > 8 || Math.abs(my) > 8)) mode = Math.abs(mx) > Math.abs(my) ? 'h' : 'v';
     if (mode !== 'h') return;
     if (e.cancelable) e.preventDefault();
+    if (inHours) { hs.scrollLeft = sl0 - mx; lastAct = Date.now(); return; }
     dx = mx;
     if ((page === 0 && dx > 0) || (page === 1 && dx < 0)) dx = dx / 4;       // motstand i endene
     tr.className = 'track drag';
@@ -625,6 +636,7 @@ function go(n, instant) {
   }
   function end() {
     if (!down) return; down = false;
+    if (mode === 'h' && inHours) { mode = ''; return; }
     if (mode === 'h') {
       window.__swiped = Date.now();
       var fast = Math.abs(dx) > 40 && Date.now() - t0 < 300;
@@ -645,6 +657,7 @@ function go(n, instant) {
   $('dots').style.pointerEvents = 'none';
   setInterval(function () {
     if (CFG.autoReturnMin > 0 && page === 1 && Date.now() - lastAct > CFG.autoReturnMin * 60e3) go(0);
+    if (hs.scrollLeft && Date.now() - lastAct > 2 * 60e3) hs.scrollLeft = 0;   // værstripen tilbake til «nå»
   }, 20e3);
 })();
 
@@ -849,8 +862,20 @@ if (DEMO) {
 } else {
   loadWeather(); setInterval(loadWeather, 10 * 60e3);
   loadTransit(); setInterval(loadTransit, 30e3);
-  // Full omlasting hver natt, så en evig kjørende side holder seg frisk
-  setInterval(function () { var d = osl(new Date()); if (d.getHours() === 4 && d.getMinutes() === 0) location.reload(); }, 60e3);
+  // Last siden på nytt når en ny versjon er publisert, og uansett én gang per natt (etter kl. 04),
+  // så nettbrettet aldri blir hengende på gammel kode. Venter til ingen har rørt skjermen på 1 min.
+  var loadedDay = todayKey(), loadedSrc = null;
+  function safeReload() { if (Date.now() - lastAct > 60e3) location.reload(); }
+  function checkVersion() {
+    fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { if (loadedSrc === null) loadedSrc = t; else if (t !== loadedSrc) safeReload(); })
+      .catch(function () { });
+  }
+  checkVersion(); setInterval(checkVersion, 5 * 60e3);
+  setInterval(function () { if (todayKey() !== loadedDay && osl(new Date()).getHours() >= 4) safeReload(); }, 60e3);
+  // Oppdater med en gang når skjermen våkner igjen
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { tick(); checkVersion(); } }, false);
 }
 </script>
 </body>
