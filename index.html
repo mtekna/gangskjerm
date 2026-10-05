@@ -154,13 +154,36 @@
   .task.on .pic { opacity: .4; }
   .task.on .txt { color: var(--muted); text-decoration: line-through; }
   .task.on .txt small { text-decoration: none; }
+
+  /* ---------- Farevarsel ---------- */
+  .upper.hasalert .head { height: 36vh; }
+  .upper.hasalert .advice { padding: 1.2vh 1.6vw; }
+  .upper.hasalert .advice .a1 { font-size: 5vh; }
+  .upper.hasalert .advice .a2 { font-size: 3.2vh; margin-top: .4vh; }
+  .alerts { display: none; flex: none; align-items: center; height: 9.6vh; margin-top: 1.4vh; padding: 0 1.6vw; border-radius: 1.6vh; border-left: 1vh solid var(--faint); cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  .alerts.lv-yellow, .alertbox .lv-yellow { background: rgba(255,209,102,.16); border-left-color: #ffd166; }
+  .alerts.lv-orange, .alertbox .lv-orange { background: rgba(255,159,67,.2); border-left-color: #ff9f43; }
+  .alerts.lv-red, .alertbox .lv-red { background: rgba(255,92,92,.24); border-left-color: #ff5c5c; }
+  .alerts .al-ic { flex: none; width: 6.4vh; height: 6.4vh; margin-right: 1.2vw; }
+  .alerts .al-ic svg { width: 100%; height: 100%; display: block; }
+  .alerts .al-tx { -webkit-box-flex: 1; flex: 1; min-width: 0; }
+  .alerts .al-tx b { display: block; font-size: 4vh; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .alerts .al-tx span { display: block; font-size: 2.7vh; color: var(--muted); margin-top: .3vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .alerts .al-more { flex: none; margin-left: 1.2vw; font-size: 3vh; font-weight: 700; color: var(--text); white-space: nowrap; }
+  .alertbox { display: none; position: absolute; left: 2vw; right: 2vw; top: 2.2vh; bottom: 3.4vh; z-index: 20; background: var(--card); border-radius: 2vh; padding: 2.4vh 2vw; overflow: hidden; box-shadow: 0 0 0 100vmax rgba(0,0,0,.55); }
+  .alertbox .it { border-left: 1vh solid var(--faint); border-radius: 1.4vh; padding: 1.4vh 1.4vw; margin-bottom: 1.6vh; }
+  .alertbox h4 { font-size: 4vh; line-height: 1.15; }
+  .alertbox .when { font-size: 2.8vh; color: var(--muted); margin: .4vh 0 .8vh; }
+  .alertbox p { font-size: 3vh; line-height: 1.3; margin-top: .6vh; }
+  .alertbox p i { font-style: normal; color: var(--muted); }
+  .alertbox .close { position: absolute; right: 2vw; bottom: 1.4vh; font-size: 2.4vh; color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="pager" id="pager"><div class="track" id="track">
 <div class="page">
 <div class="screen">
-  <section class="upper">
+  <section class="upper" id="upper">
     <div class="head">
       <div class="hl">
         <div class="mini"><div class="place" id="place"></div><div class="warn" id="stale"></div></div>
@@ -173,6 +196,7 @@
       <div class="kid" id="kid"></div>
       <div class="hr"><div class="clock" id="clock">--:--</div><div class="flagday" id="flagday"></div></div>
     </div>
+    <div class="alerts" id="alerts"></div>
     <div class="advice" id="advice"><div class="a1">Henter vær …</div><div class="a2"></div></div>
   </section>
 
@@ -182,6 +206,7 @@
       <div class="board" id="b-hauger"><h2><span class="badge metro">3</span>Hauger<span class="sub">mot sentrum</span><span class="walk"></span></h2><div class="rows"></div></div>
     </div>
   </section>
+<div class="alertbox" id="alertbox"></div>
 </div>
 </div>
 
@@ -661,6 +686,78 @@ function go(n, instant) {
   }, 20e3);
 })();
 
+// ===== Farevarsel (MET) =====
+var ALERTS = [], ALERTDEMO = (function () { var m = /[?&]alert=(\w+)/.exec(location.search); return m ? m[1] : ''; })();
+var LV = { yellow: { n: 'Gult', c: '#ffd166', w: 1 }, orange: { n: 'Oransje', c: '#ff9f43', w: 2 }, red: { n: 'Rødt', c: '#ff5c5c', w: 3 } };
+var SHORTDAY = ['søn', 'man', 'tir', 'ons', 'tor', 'fre', 'lør'];
+function alertStamp(iso) {
+  var d = new Date(iso), o = osl(d), n = osl(new Date()), t = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1);
+  var day = o.toDateString() === n.toDateString() ? 'i dag' : (o.toDateString() === t.toDateString() ? 'i morgen' : SHORTDAY[o.getDay()]);
+  return day + ' ' + hhmm(d);
+}
+function alertWhen(f) {
+  var iv = f.when && f.when.interval ? f.when.interval : [], st = new Date(iv[0]).getTime(), en = iv[1];
+  if (!iv[0]) return '';
+  return st <= Date.now() ? 'Gjelder nå til ' + alertStamp(en) : 'Fra ' + alertStamp(iv[0]) + ' til ' + alertStamp(en);
+}
+function alertLevel(f) { var c = ((f.properties || {}).riskMatrixColor || '').toLowerCase(); return LV[c] ? c : 'yellow'; }
+function setAlerts(features) {
+  var now = Date.now();
+  ALERTS = (features || []).filter(function (f) {
+    var p = f.properties || {}, iv = f.when && f.when.interval ? f.when.interval : [];
+    return p.geographicDomain !== 'marine' && p.status !== 'Test' && (!iv[1] || new Date(iv[1]).getTime() > now);
+  }).sort(function (a, b) { return LV[alertLevel(b)].w - LV[alertLevel(a)].w; });
+  renderAlerts();
+}
+function loadAlerts() {
+  fetch('https://api.met.no/weatherapi/metalerts/2.0/current.json?lat=' + CFG.lat + '&lon=' + CFG.lon)
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (j) { lastOk.alerts = Date.now(); setAlerts(j.features); })
+    .catch(function () { if (lastOk.alerts && Date.now() - lastOk.alerts > 3 * 3600e3) setAlerts([]); });
+}
+var TRI = function (c) { return '<svg viewBox="0 0 24 24"><path d="M12 2.5 L23 21.5 H1 Z" fill="' + c + '" stroke="' + c + '" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9 V15" stroke="#0b121a" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="18" r="1.4" fill="#0b121a"/></svg>'; };
+function renderAlerts() {
+  var box = $('alerts'), up = $('upper');
+  // fjern utløpte varsler
+  ALERTS = ALERTS.filter(function (f) { var iv = f.when && f.when.interval ? f.when.interval : []; return !iv[1] || new Date(iv[1]).getTime() > Date.now(); });
+  if (!ALERTS.length) { box.style.display = 'none'; up.className = 'upper'; closeAlertBox(); return; }
+  var f = ALERTS[0], p = f.properties || {}, lv = alertLevel(f);
+  box.className = 'alerts lv-' + lv; box.style.display = 'flex'; up.className = 'upper hasalert';
+  box.innerHTML = '<div class="al-ic">' + TRI(LV[lv].c) + '</div><div class="al-tx"><b>' + LV[lv].n + ' farevarsel · ' + esc(p.eventAwarenessName || p.event || 'Værvarsel') + '</b>' +
+    '<span>' + esc(alertWhen(f)) + (p.awarenessResponse ? ' · ' + esc(p.awarenessResponse) : '') + '</span></div>' +
+    (ALERTS.length > 1 ? '<div class="al-more">+' + (ALERTS.length - 1) + ' til</div>' : '');
+}
+var alertTimer = null;
+function closeAlertBox() { $('alertbox').style.display = 'none'; if (alertTimer) { clearTimeout(alertTimer); alertTimer = null; } }
+function openAlertBox() {
+  if (!ALERTS.length) return;
+  var h = '', i, f, p, lv;
+  for (i = 0; i < ALERTS.length && i < 3; i++) {
+    f = ALERTS[i]; p = f.properties || {}; lv = alertLevel(f);
+    h += '<div class="it lv-' + lv + '"><h4>' + LV[lv].n + ' farevarsel: ' + esc(p.eventAwarenessName || p.event || '') + (p.area ? ' <span style="color:var(--muted);font-weight:400;font-size:.7em">· ' + esc(p.area) + '</span>' : '') + '</h4>' +
+      '<div class="when">' + esc(alertWhen(f)) + (p.awarenessSeriousness ? ' · ' + esc(p.awarenessSeriousness) : '') + '</div>' +
+      (p.description ? '<p>' + esc(p.description) + '</p>' : '') + (p.consequences ? '<p><i>Konsekvenser:</i> ' + esc(p.consequences) + '</p>' : '') +
+      (p.instruction ? '<p><i>Råd:</i> ' + esc(p.instruction) + '</p>' : '') + '</div>';
+  }
+  var ab = $('alertbox'); ab.innerHTML = h + '<div class="close">Trykk for å lukke</div>'; ab.style.display = 'block';
+  if (alertTimer) clearTimeout(alertTimer);
+  alertTimer = setTimeout(closeAlertBox, 60e3);
+}
+function onAlertTap() { if (window.__swiped && Date.now() - window.__swiped < 400) return; lastAct = Date.now(); if ($('alertbox').style.display === 'block') closeAlertBox(); else openAlertBox(); }
+$('alerts').addEventListener('click', onAlertTap, false);
+$('alertbox').addEventListener('click', onAlertTap, false);
+function demoAlerts(kind) {
+  var now = Date.now(), mk = function (color, name, h0, h1, desc, cons, inst, resp) {
+    return { type: 'Feature', when: { interval: [new Date(now + h0 * 3600e3).toISOString(), new Date(now + h1 * 3600e3).toISOString()] },
+      properties: { riskMatrixColor: color, eventAwarenessName: name, area: 'Oslo og Bærum', geographicDomain: 'land', status: 'Actual',
+        awarenessResponse: resp, awarenessSeriousness: 'Utfordrende situasjon', description: desc, consequences: cons, instruction: inst } };
+  };
+  var a = mk('Yellow', 'Kraftig vind', -1, 9, 'Sørvest stiv til sterk kuling 15–20 m/s, i kast opptil 25 m/s. Minkende i morgen tidlig.', 'Løse gjenstander kan blåse av gårde. Trær kan falle.', 'Sikre løse gjenstander ute. Vær forsiktig i skog.', 'Følg med');
+  var b = mk('Orange', 'Mye regn', 3, 20, 'Mye regn, 40–60 mm i løpet av 24 timer.', 'Oversvømte kjellere og veier. Fare for flom i bekker.', 'Rydd sluker og avløp. Unngå å kjøre gjennom vann på veien.', 'Vær forberedt på handling');
+  var c = mk('Red', 'Ekstremt kraftig vind', 0, 14, 'Storm med vindkast over 35 m/s.', 'Stor fare for skader på hus og trær. Strømbrudd kan oppstå.', 'Hold deg innendørs.', 'Ta affære');
+  return kind === 'red' ? [c] : (kind === 'orange' ? [b] : (kind === 'multi' ? [a, b, c] : [a]));
+}
+
 // ===== Morgenrutine =====
 var KIDS = [
   { id: 'samuel',   name: 'Samuel',   color: '#4fa3ff', shirt: '#4fa3ff', hair: 'messy', hairColor: '#e3bf6a' },
@@ -855,6 +952,8 @@ loadRoutine(); checkReset();
 if (/[?&]page=2/.test(location.search)) go(1, true);
 
 tick(); setInterval(tick, 10000);
+if (ALERTDEMO) setAlerts(demoAlerts(ALERTDEMO)); else { loadAlerts(); setInterval(loadAlerts, 10 * 60e3); }
+setInterval(function () { if (ALERTS.length) renderAlerts(); }, 30e3);
 if (DEMO) {
   if (DEMO === 'error') { fails.weather = 3; fails.transit = 3; renderWeather(); renderTimes(); updateStale(); }
   else { weatherData = demoWeather(DEMO); lastOk.weather = Date.now(); renderWeather(); demoTransit(DEMO); renderTimes();
