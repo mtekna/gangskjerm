@@ -185,6 +185,19 @@
   .waste small { font-size: 2.8vh; font-weight: 400; color: var(--muted); margin-right: .6vw; }
   .waste.soon { background: rgba(255,209,102,.2); border-color: #ffd166; }
   .waste.soon small { color: var(--text); font-weight: 700; }
+
+  /* ---------- Ukeplan: dagens plan og ekstra oppgaver ---------- */
+  .col { --c: 8.4vh; --p: 9.6vh; --t: 3.5vh; --s: 2.2vh; }
+  .col.d1 { --c: 6.6vh; --p: 7.4vh; --t: 3.1vh; --s: 2vh; }
+  .col.d2 { --c: 5.4vh; --p: 5.8vh; --t: 2.8vh; --s: 1.8vh; }
+  .task .circle { width: var(--c); height: var(--c); border-width: calc(var(--c) * .11); }
+  .task .pic { width: var(--p); height: var(--p); }
+  .task .txt { font-size: var(--t); }
+  .task .txt small { font-size: var(--s); }
+  .plan { display: flex; flex-wrap: wrap; flex: none; margin: 0 0 .4vh; }
+  .chip { max-width: 100%; box-sizing: border-box; display: flex; align-items: center; background: rgba(255,209,102,.16); border: .3vh solid #ffd166; border-radius: 2.8vh; padding: .3vh 1vw .3vh .5vw; margin: 0 .6vw .6vh 0; font-size: 3vh; font-weight: 700; }
+  .chip svg { width: 4.6vh; height: 4.6vh; margin-right: .5vw; flex: none; display: block; }
+  .chip small { font-size: 2.2vh; font-weight: 400; color: var(--muted); margin-left: .6vw; white-space: normal; line-height: 1.15; }
 </style>
 </head>
 <body>
@@ -935,6 +948,16 @@ function iconSvg2(name) {
     '<path d="M25 14 Q25 4 32 4 Q39 4 39 14" fill="none" stroke="#c85a14" stroke-width="3.4"/><rect x="14" y="12" width="36" height="46" rx="13" fill="#ff8a3d"/>' +
     '<rect x="20" y="20" width="24" height="10" rx="5" fill="#f26a14"/><circle cx="32" cy="25" r="2.4" fill="#ffd166"/><rect x="20" y="36" width="24" height="16" rx="6" fill="#f26a14"/><path d="M20 37 H44" stroke="#ffe0c2" stroke-width="2"/></g>' +
     '<rect x="22" y="1" width="20" height="5" rx="2.5" fill="#9bb0c5"/><path d="M32 5 V12 Q32 17 37 17 Q42 17 42 12" stroke="#cfd6de" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+  else if (name === 'tree') g = '<rect x="28" y="42" width="8" height="16" rx="2" fill="#8b5a2b"/><path d="M32 22 L55 48 H9Z" fill="#2f8f57"/><path d="M32 6 L51 32 H13Z" fill="#3fa968"/>';
+  else if (name === 'run') g = '<circle cx="40" cy="11" r="6.5" fill="#ff8a3d"/><path d="M38 20 L30 34 L41 43 L36 58 M30 34 L17 37 M38 22 L51 30 L57 25 M30 34 L22 48 L11 52" stroke="#ff8a3d" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+  else if (name === 'book') g = '<path d="M5 13 Q19 9 32 16 Q45 9 59 13 V53 Q45 49 32 55 Q19 49 5 53Z" fill="#2f7fd6"/><path d="M9 17 Q20 14 30 20 V50 Q20 46 9 49Z M34 20 Q44 14 55 17 V49 Q44 46 34 50Z" fill="#f4f6f8"/><path d="M13 25 Q20 23 26 27 M13 33 Q20 31 26 35 M38 27 Q44 23 51 25 M38 35 Q44 31 51 33" stroke="#9bb0c5" stroke-width="2" fill="none"/>';
+  else if (name === 'ball') g = '<circle cx="32" cy="32" r="25" fill="#ff8a3d"/><path d="M7 32 H57 M32 7 V57 M13 14 Q31 32 13 50 M51 14 Q33 32 51 50" stroke="#7a3a10" stroke-width="2.6" fill="none"/>';
+  else if (name === 'log') g = '<rect x="9" y="20" width="47" height="28" rx="6" fill="#a0693b"/><ellipse cx="14" cy="34" rx="8" ry="14" fill="#e2b078"/><ellipse cx="14" cy="34" rx="4.5" ry="8" fill="none" stroke="#a0693b" stroke-width="2"/><path d="M26 28 H48 M26 40 H44" stroke="#7a4a22" stroke-width="2" stroke-linecap="round"/>';
+  else if (name === 'cushion') g = '<rect x="6" y="20" width="52" height="30" rx="11" fill="#ff7fb0"/><rect x="11" y="25" width="42" height="20" rx="7" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.2" stroke-dasharray="4 4"/>';
+  else if (name === 'food') g = '<rect x="38" y="16" width="16" height="42" rx="6" fill="#4fa3ff"/><rect x="42" y="8" width="8" height="10" rx="2" fill="#2f7fd6"/><circle cx="23" cy="40" r="15" fill="#e63946"/><path d="M23 26 Q22 18 29 15" stroke="#6b4a2f" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M26 22 Q33 18 33 25 Q28 27 26 22Z" fill="#4cae6a"/>';
+  else if (name === 'skewer') g = '<path d="M6 58 L56 8" stroke="#c9a46a" stroke-width="4" stroke-linecap="round"/><rect x="24" y="20" width="28" height="12" rx="6" transform="rotate(-45 38 26)" fill="#d9644a"/><rect x="12" y="32" width="24" height="12" rx="6" transform="rotate(-45 24 38)" fill="#e0775c"/>';
+  else if (name === 'words') g = '<rect x="5" y="9" width="54" height="46" rx="10" fill="#ffd166"/><text x="32" y="42" text-anchor="middle" font-size="27" font-weight="800" fill="#7a5a00" font-family="Arial,Helvetica,sans-serif">Aa</text>';
+  else if (name === 'shoe') g = '<path d="M5 36 Q5 27 14 27 L26 27 Q32 27 36 33 L55 38 Q60 39 60 45 V50 H5Z" fill="#4fa3ff"/><rect x="4" y="47" width="57" height="8" rx="4" fill="#f4f6f8"/><path d="M20 30 l4 5 M26 29 l4 5 M32 31 l4 5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>';
   return '<svg viewBox="0 0 64 64">' + g + '</svg>';
 }
 
@@ -954,16 +977,38 @@ function saveRoutine() {
   var raw = JSON.stringify(routine); mem = raw;
   try { window.localStorage.setItem(RKEY, raw); } catch (e) { }
 }
+var PLANDATA = null, PLANJSON = '', KT = {};
+var PLANTEST = (function () { var m = /[?&]plandate=(\d{4}-\d{2}-\d{2})/.exec(location.search); return m ? m[1] : ''; })();
+function planDay(kid) {
+  var d = PLANDATA && PLANDATA.days ? PLANDATA.days[PLANTEST || todayKey()] : null;
+  return (d && d[kid]) || {};
+}
+function slug(t) { return 'x_' + String(t).toLowerCase().replace(/[^a-z0-9æøå]+/g, ''); }
+function kidTasks(k) {
+  var pd = planDay(k.id), out = TASKS.slice(), ex = (curList === 'after' ? pd.after : pd.morning) || [], i, add = [];
+  for (i = 0; i < ex.length; i++) add.push({ id: slug(ex[i].text), text: ex[i].text, note: ex[i].note || '', icon: ex[i].icon || 'book', extra: true });
+  if (curList === 'after') return out.concat(add);
+  out.splice.apply(out, [out.length - 1, 0].concat(add));   // «ta med» før yttertøy
+  return out;
+}
 function buildRoutine() {
-  var html = '', i, j;
+  var html = '', i, j, k, tl, pd, dense;
+  KT = {};
   for (i = 0; i < KIDS.length; i++) {
-    var k = KIDS[i];
-    html += '<div class="col" id="col-' + k.id + '" style="border-top-color:' + k.color + '"><h3>' + avatarSvg(k) + k.name + '<span class="ok">⭐ Ferdig!</span></h3><div class="tasks">';
-    for (j = 0; j < TASKS.length; j++) {
-      var t = TASKS[j];
+    k = KIDS[i]; tl = kidTasks(k); KT[k.id] = tl; pd = planDay(k.id);
+    dense = tl.length >= 9 ? ' d2' : (tl.length >= 7 ? ' d1' : '');
+    html += '<div class="col' + dense + '" id="col-' + k.id + '" style="border-top-color:' + k.color + '"><h3>' + avatarSvg(k) + k.name + '<span class="ok">⭐ Ferdig!</span></h3>';
+    if (pd.plan && pd.plan.length) {
+      html += '<div class="plan">';
+      for (j = 0; j < pd.plan.length; j++) html += '<div class="chip">' + iconSvg2(pd.plan[j].icon || 'book') + esc(pd.plan[j].text) + (pd.plan[j].note ? '<small>' + esc(pd.plan[j].note) + '</small>' : '') + '</div>';
+      html += '</div>';
+    }
+    html += '<div class="tasks">';
+    for (j = 0; j < tl.length; j++) {
+      var t = tl[j];
       html += '<div class="task" data-k="' + k.id + '" data-t="' + t.id + '"><div class="circle">' + CHECK + '</div>' +
         '<div class="pic"' + (t.dyn ? ' data-dyn="1"' : '') + '>' + (t.dyn ? outerSvg(lastAdvice) : iconSvg2(t.icon)) + '</div>' +
-        '<div class="txt">' + t.text + (t.dyn ? '<small data-dyn="1">' + outerText(lastAdvice) + '</small>' : '') + '</div></div>';
+        '<div class="txt">' + esc(t.text) + (t.dyn ? '<small data-dyn="1">' + outerText(lastAdvice) + '</small>' : (t.note ? '<small>' + esc(t.note) + '</small>' : '')) + '</div></div>';
     }
     html += '</div></div>';
   }
@@ -980,16 +1025,23 @@ function onTask(e) {
   saveRoutine(); refreshRoutine();
 }
 function refreshRoutine() {
-  var els = $('cols').querySelectorAll('.task'), n, k, i;
+  var els = $('cols').querySelectorAll('.task'), n, i, j;
   for (n = 0; n < els.length; n++) {
     var key = els[n].getAttribute('data-k') + '-' + els[n].getAttribute('data-t');
     els[n].className = 'task' + (routine.c[key] ? ' on' : '');
   }
   for (i = 0; i < KIDS.length; i++) {
-    var all = true, j;
-    for (j = 0; j < TASKS.length; j++) if (!routine.c[KIDS[i].id + '-' + TASKS[j].id]) all = false;
-    $('col-' + KIDS[i].id).className = 'col' + (all ? ' done' : '');
+    var all = true, tl = KT[KIDS[i].id] || TASKS, col = $('col-' + KIDS[i].id);
+    for (j = 0; j < tl.length; j++) if (!routine.c[KIDS[i].id + '-' + tl[j].id]) all = false;
+    col.className = col.className.replace(/\s*\bdone\b/, '') + (all ? ' done' : '');
   }
+}
+// Ukeplan: korte beskjeder fra ukeplan.json (godkjent av foresatte før publisering)
+function loadPlan() {
+  fetch('ukeplan.json?t=' + Math.floor(Date.now() / 600000))
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function (txt) { if (txt === PLANJSON) return; var j = JSON.parse(txt); PLANJSON = txt; PLANDATA = j; if (routine) buildRoutine(); })
+    .catch(function () { });
 }
 function updateOuterwear(a) {
   if (a) lastAdvice = a;
@@ -1001,7 +1053,7 @@ function checkReset() {
   if (!routine) return;
   var o = osl(new Date());
   $('rdate').textContent = DAYS[o.getDay()] + ' ' + o.getDate() + '. ' + MONTHS[o.getMonth()];
-  if (routine.d !== todayKey()) { routine = { d: todayKey(), c: {} }; saveRoutine(); refreshRoutine(); }
+  if (routine.d !== todayKey()) { routine = { d: todayKey(), c: {} }; saveRoutine(); buildRoutine(); }
   var want = LISTTEST || (o.getHours() >= AFTER_HOUR ? 'after' : 'morning');
   if (want !== curList) { curList = want; TASKS = LISTS[want].tasks; $('rtitle').textContent = LISTS[want].title; buildRoutine(); }
 }
@@ -1009,6 +1061,7 @@ loadRoutine(); checkReset();
 if (/[?&]page=2/.test(location.search)) go(1, true);
 
 tick(); setInterval(tick, 10000);
+loadPlan(); setInterval(loadPlan, 30 * 60e3);
 renderWaste(); setInterval(renderWaste, 60e3);
 if (ALERTDEMO) setAlerts(demoAlerts(ALERTDEMO)); else { loadAlerts(); setInterval(loadAlerts, 10 * 60e3); }
 setInterval(function () { if (ALERTS.length) renderAlerts(); }, 30e3);
