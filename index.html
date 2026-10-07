@@ -745,7 +745,8 @@ var WASTETEST = (function () { var m = /[?&]wastedate=(\d{4})-(\d{2})-(\d{2})/.e
 var wasteShown = '';
 function renderWaste() {
   var o = WASTETEST || osl(new Date()), nx = wasteNext(o), el = $('waste');
-  if (!nx) { el.style.display = 'none'; return; }
+  // Vis bare dagen før og selve hentedagen
+  if (!nx || nx.inDays > 1) { el.style.display = 'none'; wasteShown = ''; return; }
   var label = nx.inDays === 0 ? 'I dag' : (nx.inDays === 1 ? 'I morgen' : SHORTDAY[nx.date.getDay()] + ' ' + nx.date.getDate() + '. ' + MONTHS[nx.date.getMonth()].slice(0, 3));
   var name = WASTE_NAMES[nx.types[0]] || '', key = label + '|' + nx.types.join();
   if (key === wasteShown) return;
