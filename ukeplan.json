@@ -1,45 +1,75 @@
 {
-  "uke": 41,
+  "uke": 42,
   "days": {
-    "2026-10-05": {
-      "samuel": { "after": [
-        { "text": "Lese 15 min", "note": "s. 50–52", "icon": "book" },
-        { "text": "Øve på ukas ord", "note": "hvor · hvordan · hvem · hvit · hval", "icon": "words" } ] }
-    },
-    "2026-10-06": {
+    "2026-10-12": {
       "samuel": {
-        "plan": [ { "text": "Levrejoggen", "icon": "run" } ],
-        "morning": [ { "text": "Løpetøy og sko", "icon": "shoe" } ],
         "after": [
-          { "text": "Lese 15 min", "note": "s. 50–52", "icon": "book" },
-          { "text": "Øve på ukas ord", "note": "hvor · hvordan · hvem · hvit · hval", "icon": "words" } ] },
-      "miriam": {
-        "plan": [ { "text": "Levrejoggen", "note": "kl. 09.30", "icon": "run" } ],
-        "after": [ { "text": "Lese sammen", "note": "s. 44–45 · bokstaven F", "icon": "book" } ] }
+          {
+            "text": "Lese 15 min",
+            "note": "s. 60–63",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "icon": "words"
+          }
+        ]
+      }
     },
-    "2026-10-07": {
-      "samuel": { "after": [
-        { "text": "Lese 15 min", "note": "s. 50–52", "icon": "book" },
-        { "text": "Øve på ukas ord", "note": "hvor · hvordan · hvem · hvit · hval", "icon": "words" } ] },
-      "miriam": {
-        "plan": [ { "text": "Bibliotek", "icon": "book" } ],
-        "after": [ { "text": "Lese sammen", "note": "s. 48–49 · bokstaven Å", "icon": "book" } ] }
-    },
-    "2026-10-08": {
+    "2026-10-13": {
       "samuel": {
-        "plan": [ { "text": "Gym i dag", "icon": "ball" } ],
         "after": [
-          { "text": "Lese 15 min", "note": "s. 50–52", "icon": "book" },
-          { "text": "Øve på ukas ord", "note": "hvor · hvordan · hvem · hvit · hval", "icon": "words" } ] }
+          {
+            "text": "Lese 15 min",
+            "note": "s. 60–63",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "icon": "words"
+          }
+        ],
+        "plan": [
+          {
+            "text": "Uteskole",
+            "icon": "tree"
+          }
+        ]
+      }
     },
-    "2026-10-09": {
-      "miriam": {
-        "plan": [ { "text": "Uteskole", "note": "bål", "icon": "tree" } ],
-        "morning": [
-          { "text": "Vedkubbe", "icon": "log" },
-          { "text": "Grillspyd", "note": "hvis pølser", "icon": "skewer" },
-          { "text": "Sitteunderlag", "icon": "cushion" },
-          { "text": "Mat og drikke", "icon": "food" } ] }
+    "2026-10-14": {
+      "samuel": {
+        "after": [
+          {
+            "text": "Lese 15 min",
+            "note": "s. 60–63",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "icon": "words"
+          }
+        ]
+      }
+    },
+    "2026-10-15": {
+      "samuel": {
+        "after": [
+          {
+            "text": "Lese 15 min",
+            "note": "s. 60–63",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "icon": "words"
+          }
+        ]
+      }
     }
   }
 }

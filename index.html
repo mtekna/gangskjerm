@@ -999,7 +999,7 @@ function buildRoutine() {
     k = KIDS[i]; tl = kidTasks(k); KT[k.id] = tl; pd = planDay(k.id);
     dense = tl.length >= 9 ? ' d2' : (tl.length >= 7 ? ' d1' : '');
     html += '<div class="col' + dense + '" id="col-' + k.id + '" style="border-top-color:' + k.color + '"><h3>' + avatarSvg(k) + k.name + '<span class="ok">⭐ Ferdig!</span></h3>';
-    if (pd.plan && pd.plan.length) {
+    if (curList === 'morning' && pd.plan && pd.plan.length) {   // dagens skoleaktivitet vises bare i morgenlisten
       html += '<div class="plan">';
       for (j = 0; j < pd.plan.length; j++) html += '<div class="chip">' + iconSvg2(pd.plan[j].icon || 'book') + esc(pd.plan[j].text) + (pd.plan[j].note ? '<small>' + esc(pd.plan[j].note) + '</small>' : '') + '</div>';
       html += '</div>';
