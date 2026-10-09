@@ -37,6 +37,15 @@
             "icon": "tree"
           }
         ]
+      },
+      "miriam": {
+        "after": [
+          {
+            "text": "Lese sammen",
+            "note": "s. 44–45 · bokstaven R",
+            "icon": "book"
+          }
+        ]
       }
     },
     "2026-10-14": {
@@ -53,6 +62,21 @@
             "icon": "words"
           }
         ]
+      },
+      "miriam": {
+        "plan": [
+          {
+            "text": "Bibliotek",
+            "icon": "book"
+          }
+        ],
+        "after": [
+          {
+            "text": "Lese sammen",
+            "note": "s. 48–49 · bokstaven U",
+            "icon": "book"
+          }
+        ]
       }
     },
     "2026-10-15": {
@@ -67,6 +91,44 @@
             "text": "Øve på ukas ord",
             "note": "hva · hvilke · hvordan · hvorfor · hvilken",
             "icon": "words"
+          }
+        ]
+      },
+      "miriam": {
+        "plan": [
+          {
+            "text": "Uteskole",
+            "note": "bål",
+            "icon": "tree"
+          }
+        ],
+        "morning": [
+          {
+            "text": "Vedkubbe",
+            "icon": "log"
+          },
+          {
+            "text": "Grillspyd",
+            "note": "hvis pølser",
+            "icon": "skewer"
+          },
+          {
+            "text": "Sitteunderlag",
+            "icon": "cushion"
+          },
+          {
+            "text": "Mat og drikke",
+            "icon": "food"
+          }
+        ]
+      }
+    },
+    "2026-10-16": {
+      "miriam": {
+        "plan": [
+          {
+            "text": "Gym i dag",
+            "icon": "ball"
           }
         ]
       }
