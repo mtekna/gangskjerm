@@ -870,7 +870,7 @@ function demoAlerts(kind) {
 var KIDS = [
   { id: 'samuel',   name: 'Samuel',   color: '#4fa3ff', shirt: '#4fa3ff', hair: 'messy', hairColor: '#e3bf6a' },
   { id: 'miriam',   name: 'Miriam',   color: '#ff7fb0', shirt: '#ff7fb0', hair: 'long',  hairColor: '#dcb86e', glasses: true },
-  { id: 'benjamin', name: 'Benjamin', color: '#5fe39a', shirt: '#5fe39a', hair: 'short', hairColor: '#ecd48e' }
+  { id: 'benjamin', name: 'Benjamin', color: '#5fe39a', shirt: '#5fe39a', hair: 'short', hairColor: '#ecd48e', place: 'barnehagen' }
 ];
 var LISTS = {
   morning: { title: 'Morgenrutine', tasks: [
@@ -1090,7 +1090,7 @@ function celebrate(kidId, kind) {
     var rays = '', a;
     for (i = 0; i < 12; i++) { a = i * Math.PI / 6; rays += '<line x1="' + (50 + Math.cos(a) * 36).toFixed(1) + '" y1="' + (50 + Math.sin(a) * 36).toFixed(1) + '" x2="' + (50 + Math.cos(a) * 48).toFixed(1) + '" y2="' + (50 + Math.sin(a) * 48).toFixed(1) + '" stroke="#fff3b0" stroke-width="4" stroke-linecap="round"/>'; }
     h += '<div class="sunwrap"><svg class="spin" viewBox="0 0 100 100">' + rays + '</svg><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="27" fill="#fff3b0"/><circle cx="50" cy="50" r="21" fill="#ffd54a"/></svg></div>' +
-      '<div class="av">' + avatarSvg(kid) + '</div><h4>Klar for skolen!</h4><p>' + kid.name + ', du har gjort alt 🎒</p>';
+      '<div class="av">' + avatarSvg(kid) + '</div><h4>Klar for ' + (kid.place || 'skolen') + '!</h4><p>' + kid.name + ', du har gjort alt 🎒</p>';
   } else {
     for (i = 0; i < 22; i++) h += '<span class="st" style="left:' + rnd(3, 95).toFixed(1) + '%;top:' + rnd(3, 90).toFixed(1) + '%;animation-delay:' + rnd(0, 1.2).toFixed(2) + 's"></span>';
     var spots = [[20, 14], [78, 12], [82, 44]], fc = ['#ffd166', '#ff7fb0', '#7fd8ff'], k, n;
@@ -1100,7 +1100,7 @@ function celebrate(kidId, kind) {
       h += '</div>';
     }
     h += '<div class="moonwrap"><svg viewBox="0 0 64 64"><path d="M44 8 A26 26 0 1 0 56 44 A21 21 0 1 1 44 8Z" fill="#ffe9a8"/></svg></div>' +
-      '<div class="av">' + avatarSvg(kid) + '</div><h4>Godt jobbet!</h4><p>' + kid.name + ', nå er det fri-tid ⭐</p>';
+      '<div class="av">' + avatarSvg(kid) + '</div><h4>Godt jobbet!</h4><p>' + kid.name + ', nå er det fritid ⭐</p>';
   }
   var el = document.createElement('div');
   el.className = 'cele ' + kind; el.innerHTML = h;
