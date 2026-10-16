@@ -1,40 +1,28 @@
 {
-  "uke": 42,
+  "uke": 43,
   "days": {
-    "2026-10-12": {
-      "samuel": {
-        "after": [
+    "2026-10-16": {
+      "miriam": {
+        "plan": [
           {
-            "text": "Lese 15 min",
-            "note": "s. 60–63",
-            "icon": "book"
-          },
-          {
-            "text": "Øve på ukas ord",
-            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
-            "icon": "words"
+            "text": "Gym i dag",
+            "icon": "ball"
           }
         ]
       }
     },
-    "2026-10-13": {
+    "2026-10-19": {
       "samuel": {
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "s. 60–63",
+            "note": "arket i mappen",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "note": "vott · tommel · godt · slott · fordi",
             "icon": "words"
-          }
-        ],
-        "plan": [
-          {
-            "text": "Uteskole",
-            "icon": "tree"
           }
         ]
       },
@@ -42,24 +30,30 @@
         "after": [
           {
             "text": "Lese sammen",
-            "note": "s. 44–45 · bokstaven R",
+            "note": "s. 60–61 · bokstaven V",
             "icon": "book"
           }
         ]
       }
     },
-    "2026-10-14": {
+    "2026-10-20": {
       "samuel": {
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "s. 60–63",
+            "note": "arket i mappen",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "note": "vott · tommel · godt · slott · fordi",
             "icon": "words"
+          }
+        ],
+        "plan": [
+          {
+            "text": "Uteskole",
+            "icon": "tree"
           }
         ]
       },
@@ -73,23 +67,48 @@
         "after": [
           {
             "text": "Lese sammen",
-            "note": "s. 48–49 · bokstaven U",
+            "note": "s. 60–61 · bokstaven V",
             "icon": "book"
           }
         ]
       }
     },
-    "2026-10-15": {
+    "2026-10-21": {
       "samuel": {
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "s. 60–63",
+            "note": "arket i mappen",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "hva · hvilke · hvordan · hvorfor · hvilken",
+            "note": "vott · tommel · godt · slott · fordi",
+            "icon": "words"
+          }
+        ]
+      },
+      "miriam": {
+        "after": [
+          {
+            "text": "Lese sammen",
+            "note": "Fra s. 64 · bokstaven Æ",
+            "icon": "book"
+          }
+        ]
+      }
+    },
+    "2026-10-22": {
+      "samuel": {
+        "after": [
+          {
+            "text": "Lese 15 min",
+            "note": "arket i mappen",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "vott · tommel · godt · slott · fordi",
             "icon": "words"
           }
         ]
@@ -100,6 +119,13 @@
             "text": "Uteskole",
             "note": "bål",
             "icon": "tree"
+          }
+        ],
+        "after": [
+          {
+            "text": "Lese sammen",
+            "note": "Fra s. 64 · bokstaven Æ",
+            "icon": "book"
           }
         ],
         "morning": [
@@ -123,9 +149,14 @@
         ]
       }
     },
-    "2026-10-16": {
+    "2026-10-23": {
       "miriam": {
         "plan": [
+          {
+            "text": "FN‑dagen",
+            "note": "fellessamling kl. 08.45",
+            "icon": "globe"
+          },
           {
             "text": "Gym i dag",
             "icon": "ball"

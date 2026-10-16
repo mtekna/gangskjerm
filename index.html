@@ -962,7 +962,7 @@ function outerText(a) {
   else if (lvl === 'mild') t = 'Tynn jakke eller genser';
   else t = 'Ingen jakke trengs i dag';
   if (a.wind >= 10) t += ' – det blåser';
-  return t;
+  return t + ' · husk refleks';
 }
 
 function iconSvg2(name) {
@@ -1001,6 +1001,7 @@ function iconSvg2(name) {
     '<rect x="26" y="26" width="3.4" height="14" rx="1" fill="#b57b0c"/><path d="M45 25.5 L55 18 Q60.5 32.5 55 47 L45 39.5Z" fill="#f7c84a"/><ellipse cx="56.5" cy="32.5" rx="3.4" ry="14.5" fill="#ffe08a" stroke="#b57b0c" stroke-width="1.6"/>' +
     '<path d="M15 27 V19" stroke="#cfd6de" stroke-width="3" stroke-linecap="round"/><rect x="10" y="15" width="10" height="4" rx="2" fill="#cfd6de"/>' +
     '<circle cx="30" cy="10" r="3.2" fill="#4fa3ff"/><path d="M33 10 V2.5 Q38 3.5 39 7.5" stroke="#4fa3ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+  else if (name === 'globe') g = '<circle cx="32" cy="32" r="25" fill="#4b92db"/><path d="M7 32 H57 M32 7 Q18 32 32 57 M32 7 Q46 32 32 57 M12 18 H52 M12 46 H52" stroke="#fff" stroke-width="2.2" fill="none"/><path d="M10 40 Q22 58 32 58 M54 40 Q42 58 32 58" stroke="#b9d9a0" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
   else if (name === 'shoe') g = '<path d="M5 36 Q5 27 14 27 L26 27 Q32 27 36 33 L55 38 Q60 39 60 45 V50 H5Z" fill="#4fa3ff"/><rect x="4" y="47" width="57" height="8" rx="4" fill="#f4f6f8"/><path d="M20 30 l4 5 M26 29 l4 5 M32 31 l4 5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>';
   return '<svg viewBox="0 0 64 64">' + g + '</svg>';
 }
