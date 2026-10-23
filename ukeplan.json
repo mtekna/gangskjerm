@@ -1,9 +1,14 @@
 {
-  "uke": 43,
+  "uke": 44,
   "days": {
-    "2026-10-16": {
+    "2026-10-23": {
       "miriam": {
         "plan": [
+          {
+            "text": "FN‑dagen",
+            "note": "fellessamling kl. 08.45",
+            "icon": "globe"
+          },
           {
             "text": "Gym i dag",
             "icon": "ball"
@@ -11,18 +16,22 @@
         ]
       }
     },
-    "2026-10-19": {
+    "2026-10-26": {
       "samuel": {
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "arket i mappen",
+            "note": "s. 68–71",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "vott · tommel · godt · slott · fordi",
+            "note": "stoppe · lokk · rotte · hoppe · sokk",
             "icon": "words"
+          },
+          {
+            "text": "Finn refleksvest og reflekser",
+            "icon": "vest"
           }
         ]
       },
@@ -30,30 +39,78 @@
         "after": [
           {
             "text": "Lese sammen",
-            "note": "s. 60–61 · bokstaven V",
+            "note": "s. 68–69 · bokstaven Y",
             "icon": "book"
           }
         ]
       }
     },
-    "2026-10-20": {
+    "2026-10-27": {
       "samuel": {
+        "plan": [
+          {
+            "text": "Uteskole",
+            "note": "bål",
+            "icon": "tree"
+          }
+        ],
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "arket i mappen",
+            "note": "s. 68–71",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "vott · tommel · godt · slott · fordi",
+            "note": "stoppe · lokk · rotte · hoppe · sokk",
             "icon": "words"
           }
         ],
-        "plan": [
+        "morning": [
           {
-            "text": "Uteskole",
-            "icon": "tree"
+            "text": "Vedkubbe",
+            "icon": "log"
+          },
+          {
+            "text": "Matpakke og pølser/toast",
+            "icon": "food"
+          },
+          {
+            "text": "Sitteunderlag",
+            "icon": "cushion"
+          },
+          {
+            "text": "Utebukse",
+            "icon": "pants"
+          },
+          {
+            "text": "Refleksvest",
+            "icon": "vest"
+          }
+        ]
+      },
+      "miriam": {
+        "after": [
+          {
+            "text": "Lese sammen",
+            "note": "s. 68–69 · bokstaven Y",
+            "icon": "book"
+          }
+        ]
+      }
+    },
+    "2026-10-28": {
+      "samuel": {
+        "after": [
+          {
+            "text": "Lese 15 min",
+            "note": "s. 68–71",
+            "icon": "book"
+          },
+          {
+            "text": "Øve på ukas ord",
+            "note": "stoppe · lokk · rotte · hoppe · sokk",
+            "icon": "words"
           }
         ]
       },
@@ -67,23 +124,23 @@
         "after": [
           {
             "text": "Lese sammen",
-            "note": "s. 60–61 · bokstaven V",
+            "note": "s. 72–73 · bokstaven D",
             "icon": "book"
           }
         ]
       }
     },
-    "2026-10-21": {
+    "2026-10-29": {
       "samuel": {
         "after": [
           {
             "text": "Lese 15 min",
-            "note": "arket i mappen",
+            "note": "s. 68–71",
             "icon": "book"
           },
           {
             "text": "Øve på ukas ord",
-            "note": "vott · tommel · godt · slott · fordi",
+            "note": "stoppe · lokk · rotte · hoppe · sokk",
             "icon": "words"
           }
         ]
@@ -92,40 +149,19 @@
         "after": [
           {
             "text": "Lese sammen",
-            "note": "Fra s. 64 · bokstaven Æ",
+            "note": "s. 72–73 · bokstaven D",
             "icon": "book"
           }
         ]
       }
     },
-    "2026-10-22": {
-      "samuel": {
-        "after": [
-          {
-            "text": "Lese 15 min",
-            "note": "arket i mappen",
-            "icon": "book"
-          },
-          {
-            "text": "Øve på ukas ord",
-            "note": "vott · tommel · godt · slott · fordi",
-            "icon": "words"
-          }
-        ]
-      },
+    "2026-10-30": {
       "miriam": {
         "plan": [
           {
             "text": "Uteskole",
             "note": "bål",
             "icon": "tree"
-          }
-        ],
-        "after": [
-          {
-            "text": "Lese sammen",
-            "note": "Fra s. 64 · bokstaven Æ",
-            "icon": "book"
           }
         ],
         "morning": [
@@ -145,21 +181,6 @@
           {
             "text": "Mat og drikke",
             "icon": "food"
-          }
-        ]
-      }
-    },
-    "2026-10-23": {
-      "miriam": {
-        "plan": [
-          {
-            "text": "FN‑dagen",
-            "note": "fellessamling kl. 08.45",
-            "icon": "globe"
-          },
-          {
-            "text": "Gym i dag",
-            "icon": "ball"
           }
         ]
       }
