@@ -1,21 +1,6 @@
 {
   "uke": 44,
   "days": {
-    "2026-10-23": {
-      "miriam": {
-        "plan": [
-          {
-            "text": "FN‑dagen",
-            "note": "fellessamling kl. 08.45",
-            "icon": "globe"
-          },
-          {
-            "text": "Gym i dag",
-            "icon": "ball"
-          }
-        ]
-      }
-    },
     "2026-10-26": {
       "samuel": {
         "after": [
@@ -185,5 +170,12 @@
         ]
       }
     }
-  }
+  },
+  "birthdays": [
+    {
+      "date": "2026-10-25",
+      "kid": "benjamin",
+      "age": 3
+    }
+  ]
 }
